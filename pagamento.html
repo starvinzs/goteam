@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pagamento — Go Team</title>
+<link rel="icon" href="assets/go-team-logo.png" type="image/png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{colors:{petroleo:'#0d3b45',lima:'#c6f43a',limaDark:'#a5cf2a'},fontFamily:{display:['"Barlow Condensed"','sans-serif'],sans:['Inter','sans-serif']}}}}</script>
+<style>body{font-family:'Inter',sans-serif;background:#f8fafc;color:#0d3b45}h1,h2,h3{font-family:'Barlow Condensed',sans-serif;font-weight:900}</style>
+</head>
+<body class="min-h-screen">
+
+<header class="bg-white border-b border-slate-200">
+  <div class="mx-auto max-w-6xl px-4 md:px-8 h-16 flex items-center justify-between">
+    <a href="index.html" class="flex items-center gap-2"><img src="assets/go-team-logo.png" alt="Go Team" class="h-10 w-auto" /></a>
+    <a href="index.html" class="text-sm font-semibold hover:text-limaDark">← Voltar</a>
+  </div>
+</header>
+
+<main class="mx-auto max-w-6xl px-4 md:px-8 py-12">
+  <div class="grid lg:grid-cols-2 gap-10">
+
+    <!-- Plano -->
+    <div>
+      <div class="text-xs uppercase tracking-widest font-bold text-limaDark mb-3">Resumo do pedido</div>
+      <h1 class="text-4xl md:text-5xl mb-2">Planilha <span id="planoNome" class="text-petroleo">—</span></h1>
+      <p id="planoDesc" class="text-slate-600 mb-8 font-sans"></p>
+
+      <div class="rounded-3xl bg-white p-8 shadow-sm border border-slate-200">
+        <div class="flex items-baseline justify-between mb-6 pb-6 border-b border-slate-200">
+          <div>
+            <div class="text-sm text-slate-500 font-sans">Valor</div>
+            <div id="planoPreco" class="text-4xl font-black text-petroleo">R$ —</div>
+          </div>
+          <div id="planoBadge" class="rounded-full bg-lima px-4 py-1 text-xs font-bold uppercase tracking-wider text-petroleo">—</div>
+        </div>
+
+        <ul id="planoFeatures" class="space-y-3 mb-8 text-sm font-sans"></ul>
+
+        <a id="btnPagar" href="#" target="_blank" rel="noreferrer" class="w-full inline-flex items-center justify-center gap-2 rounded-full bg-[#25D366] text-white px-6 py-4 text-base font-bold hover:scale-[1.02] transition">
+          💬 Pagar e confirmar via WhatsApp
+        </a>
+
+        <div class="mt-6 rounded-2xl bg-slate-50 p-4 text-sm text-slate-600 font-sans">
+          <strong class="text-petroleo">Como funciona:</strong> após confirmar seu pagamento via PIX pelo WhatsApp, você recebe seu login e senha para acessar a área do aluno e baixar sua planilha.
+        </div>
+      </div>
+    </div>
+
+    <!-- Login -->
+    <div>
+      <div class="text-xs uppercase tracking-widest font-bold text-limaDark mb-3">Já é aluno?</div>
+      <h2 class="text-4xl md:text-5xl mb-2">Entrar</h2>
+      <p class="text-slate-600 mb-8 font-sans">Acesse sua área e baixe suas planilhas.</p>
+
+      <form id="loginForm" class="rounded-3xl bg-white p-8 shadow-sm border border-slate-200 space-y-4">
+        <div>
+          <label class="block text-sm font-semibold mb-1">E-mail</label>
+          <input type="email" name="email" required class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:border-lima focus:outline-none" placeholder="seu@email.com" />
+        </div>
+        <div>
+          <label class="block text-sm font-semibold mb-1">Senha</label>
+          <input type="password" name="senha" required class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:border-lima focus:outline-none" placeholder="••••••••" />
+        </div>
+        <div id="loginErro" class="hidden text-sm text-red-600 font-sans"></div>
+        <button type="submit" class="w-full inline-flex items-center justify-center rounded-full bg-petroleo text-white px-6 py-3 font-bold hover:bg-lima hover:text-petroleo transition">Entrar</button>
+        <p class="text-xs text-slate-500 text-center font-sans">Ainda não tem acesso? Efetue o pagamento acima.</p>
+      </form>
+    </div>
+
+  </div>
+</main>
+
+<script>
+  const PLANOS = {
+    "5K":  { nome:"5K — Primeiros Passos", desc:"Ideal para iniciantes que querem cruzar a primeira linha de chegada.", preco:"R$ 79", badge:"Iniciante", features:["8 semanas de treino","Progressão caminhada + corrida","Suporte via WhatsApp","Dicas de respiração e postura"] },
+    "10K": { nome:"10K — Evolução",         desc:"Para quem já corre e quer ganhar ritmo e resistência.",              preco:"R$ 99", badge:"Mais popular", features:["10 semanas de treino","Treinos intervalados","Fortalecimento específico","Estratégia de prova"] },
+    "21K": { nome:"21K — Meia Maratona",    desc:"Preparação estruturada e periodizada para a meia maratona.",         preco:"R$ 149", badge:"Avançado", features:["12 semanas de treino","Long runs progressivos","Estratégia nutricional","Análise de pace"] }
+  };
+  const params = new URLSearchParams(location.search);
+  const plano = (params.get("plano") || "10K").toUpperCase();
+  const p = PLANOS[plano] || PLANOS["10K"];
+  document.getElementById("planoNome").textContent = p.nome;
+  document.getElementById("planoDesc").textContent = p.desc;
+  document.getElementById("planoPreco").textContent = p.preco;
+  document.getElementById("planoBadge").textContent = p.badge;
+  document.getElementById("planoFeatures").innerHTML = p.features.map(f=>`<li class="flex items-start gap-2"><span class="mt-0.5 w-4 h-4 rounded-full bg-lima text-petroleo flex items-center justify-center text-[10px] font-black">✓</span>${f}</li>`).join("");
+  const msg = encodeURIComponent(`Olá! Quero comprar a planilha ${p.nome} (${p.preco}). Como faço o pagamento?`);
+  document.getElementById("btnPagar").href = `https://wa.me/5517982309000?text=${msg}`;
+
+  // Login (demo)
+  const CLIENTES = [
+    { email:"aluno@exemplo.com", senha:"goteam123", nome:"Aluno Demo", planilhas:["5K","10K","21K"] }
+  ];
+  document.getElementById("loginForm").addEventListener("submit", (e)=>{
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const email = String(fd.get("email")||"").trim().toLowerCase();
+    const senha = String(fd.get("senha")||"");
+    const user = CLIENTES.find(c=>c.email===email && c.senha===senha);
+    const erro = document.getElementById("loginErro");
+    if (!user){ erro.textContent = "E-mail ou senha inválidos."; erro.classList.remove("hidden"); return; }
+    sessionStorage.setItem("goteam_user", JSON.stringify({ email:user.email, nome:user.nome, planilhas:user.planilhas }));
+    location.href = "area.html";
+  });
+</script>
+</body>
+</html>

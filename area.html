@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Minha Área · Go Team</title>
+  <meta name="description" content="Visualize ou baixe suas planilhas de treino." />
+  <meta name="robots" content="noindex" />
+  <link rel="icon" href="assets/go-team-logo.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --petroleo: oklch(0.38 0.07 220);
+      --petroleo-dark: oklch(0.28 0.06 220);
+      --lima: oklch(0.86 0.22 130);
+      --lima-hover: oklch(0.78 0.2 140);
+      --bg: oklch(1 0 0);
+      --fg: oklch(0.25 0.05 220);
+      --muted: oklch(0.5 0.03 220);
+      --secondary: oklch(0.96 0.02 220);
+      --border: oklch(0.9 0.02 220);
+      --gradient-hero: linear-gradient(135deg, oklch(0.32 0.06 220) 0%, oklch(0.42 0.08 215) 100%);
+      --shadow-elegant: 0 20px 60px -20px oklch(0.38 0.07 220 / 0.35);
+      --shadow-glow: 0 0 40px oklch(0.86 0.22 130 / 0.4);
+    }
+    body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--fg); }
+    h1, h2, h3, h4 { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; }
+    .gradient-hero { background: var(--gradient-hero); }
+    .text-primary { color: var(--petroleo); }
+    .bg-primary { background-color: var(--petroleo); }
+    .text-lima { color: var(--lima); }
+    .bg-secondary { background-color: var(--secondary); }
+    .text-muted { color: var(--muted); }
+    .border-border { border-color: var(--border); }
+    .shadow-elegant { box-shadow: var(--shadow-elegant); }
+    .shadow-glow { box-shadow: var(--shadow-glow); }
+    .label-dist { color: oklch(0.5 0.15 140); }
+    .btn-tab.active { background-color: var(--petroleo); color: white; box-shadow: var(--shadow-glow); }
+    .btn-tab:not(.active) { background-color: var(--secondary); color: var(--fg); }
+    .btn-tab:not(.active):hover { background-color: var(--border); }
+    .btn-open { background-color: var(--lima); color: var(--petroleo); transition: all .2s; }
+    .btn-open:hover { transform: scale(1.05); }
+    .btn-download { background-color: var(--petroleo); color: white; transition: all .2s; }
+    .btn-download:hover { transform: scale(1.05); }
+  </style>
+</head>
+<body class="min-h-screen">
+  <header class="border-b border-border bg-white/80 backdrop-blur-lg sticky top-0 z-40">
+    <div class="mx-auto max-w-6xl px-4 md:px-8 h-16 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-2">
+        <img src="assets/go-team-logo.png" alt="Go Team" class="h-10 w-auto" />
+      </a>
+      <div class="flex items-center gap-4">
+        <span id="saudacao" class="hidden sm:inline text-sm text-muted"></span>
+        <button id="btnSair" class="text-sm font-semibold hover:text-primary transition">
+          Sair
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <section class="gradient-hero py-10 md:py-14">
+    <div class="mx-auto max-w-6xl px-4 md:px-8 text-white">
+      <div class="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/20 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest mb-4">
+        Minha área
+      </div>
+      <h1 class="text-3xl md:text-5xl mb-2">Suas planilhas</h1>
+      <p class="text-white/80">Visualize direto no navegador ou baixe em PDF.</p>
+    </div>
+  </section>
+
+  <section class="py-10 md:py-14">
+    <div class="mx-auto max-w-6xl px-4 md:px-8">
+      <div id="semPlanilhas" class="hidden bg-secondary rounded-2xl p-8 text-center border border-border">
+        <p class="text-muted">Nenhuma planilha liberada ainda.</p>
+        <a href="index.html#planilhas" class="inline-block mt-4 rounded-full bg-primary text-white px-6 py-3 text-sm font-bold hover:bg-lima hover:text-primary transition">
+          Ver planilhas
+        </a>
+      </div>
+
+      <div id="comPlanilhas" class="hidden">
+        <div id="tabs" class="flex flex-wrap gap-3 mb-6"></div>
+
+        <div id="visualizador" class="bg-secondary rounded-3xl p-6 md:p-8 border border-border shadow-elegant">
+          <div class="flex flex-wrap items-center justify-between gap-4 mb-5">
+            <div>
+              <div class="text-xs font-bold uppercase tracking-widest label-dist">Planilha ativa</div>
+              <div id="tituloAtivo" class="text-2xl font-black"></div>
+            </div>
+            <div class="flex gap-2">
+              <a id="btnAbrir" href="#" target="_blank" rel="noreferrer" class="btn-open inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold">
+                Abrir em nova aba
+              </a>
+              <a id="btnBaixar" href="#" download class="btn-download inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold">
+                ⬇ Baixar PDF
+              </a>
+            </div>
+          </div>
+          <div class="rounded-2xl overflow-hidden bg-white border border-border">
+            <iframe id="pdfFrame" src="" title="Planilha" class="w-full h-[75vh]"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const raw = sessionStorage.getItem("goteam_user");
+    if (!raw) { location.href = "login.html"; }
+    const user = JSON.parse(raw);
+
+    const PLANILHAS = {
+      "5K": { titulo: "Primeiros Passos — 5K", arquivo: "planilhas/planilha-5k.pdf" },
+      "10K": { titulo: "Evolução — 10K", arquivo: "planilhas/planilha-10k.pdf" },
+      "21K": { titulo: "Meia Maratona — 21K", arquivo: "planilhas/planilha-21k.pdf" }
+    };
+
+    document.getElementById("saudacao").innerHTML = `Olá, <strong class="text-foreground">${user.nome}</strong>`;
+    document.getElementById("btnSair").addEventListener("click", () => {
+      sessionStorage.removeItem("goteam_user");
+      location.href = "login.html";
+    });
+
+    let ativa = user.planilhas[0] || null;
+
+    function renderPlanilha() {
+      const p = ativa ? PLANILHAS[ativa] : null;
+      if (!p) return;
+      document.getElementById("tituloAtivo").textContent = p.titulo;
+      document.getElementById("pdfFrame").src = p.arquivo;
+      document.getElementById("btnAbrir").href = p.arquivo;
+      document.getElementById("btnBaixar").href = p.arquivo;
+    }
+
+    function renderTabs() {
+      const container = document.getElementById("tabs");
+      container.innerHTML = user.planilhas.map(d => `
+        <button data-key="${d}" class="btn-tab px-6 py-3 rounded-full text-sm font-bold transition ${ativa === d ? 'active' : ''}">
+          Planilha ${d}
+        </button>
+      `).join("");
+      container.querySelectorAll("button").forEach(btn => {
+        btn.addEventListener("click", () => {
+          ativa = btn.dataset.key;
+          renderTabs();
+          renderPlanilha();
+        });
+      });
+    }
+
+    if (!user.planilhas || user.planilhas.length === 0) {
+      document.getElementById("semPlanilhas").classList.remove("hidden");
+    } else {
+      document.getElementById("comPlanilhas").classList.remove("hidden");
+      renderTabs();
+      renderPlanilha();
+    }
+  </script>
+</body>
+</html>
