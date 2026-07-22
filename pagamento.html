@@ -8,8 +8,28 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
-<script>tailwind.config={theme:{extend:{colors:{petroleo:'#0d3b45',lima:'#c6f43a',limaDark:'#a5cf2a'},fontFamily:{display:['"Barlow Condensed"','sans-serif'],sans:['Inter','sans-serif']}}}}</script>
-<style>body{font-family:'Inter',sans-serif;background:#f8fafc;color:#0d3b45}h1,h2,h3{font-family:'Barlow Condensed',sans-serif;font-weight:900}</style>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  :root {
+    --petroleo: oklch(0.38 0.07 220);
+    --lima: oklch(0.86 0.22 130);
+    --bg: oklch(1 0 0);
+    --fg: oklch(0.25 0.05 220);
+    --muted: oklch(0.5 0.03 220);
+    --secondary: oklch(0.96 0.02 220);
+    --border: oklch(0.9 0.02 220);
+    --shadow-elegant: 0 20px 60px -20px oklch(0.38 0.07 220 / 0.35);
+  }
+  body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--fg); }
+  h1, h2, h3 { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; }
+  .text-primary { color: var(--petroleo); }
+  .bg-primary { background-color: var(--petroleo); }
+  .text-lima { color: var(--lima); }
+  .bg-secondary { background-color: var(--secondary); }
+  .text-muted { color: var(--muted); }
+  .border-border { border-color: var(--border); }
+  .shadow-elegant { box-shadow: var(--shadow-elegant); }
+</style>
 </head>
 <body class="min-h-screen">
 
@@ -50,27 +70,15 @@
       </div>
     </div>
 
-    <!-- Login -->
-    <div>
-      <div class="text-xs uppercase tracking-widest font-bold text-limaDark mb-3">Já é aluno?</div>
-      <h2 class="text-4xl md:text-5xl mb-2">Entrar</h2>
-      <p class="text-slate-600 mb-8 font-sans">Acesse sua área e baixe suas planilhas.</p>
-
-      <form id="loginForm" class="rounded-3xl bg-white p-8 shadow-sm border border-slate-200 space-y-4">
-        <div>
-          <label class="block text-sm font-semibold mb-1">E-mail</label>
-          <input type="email" name="email" required class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:border-lima focus:outline-none" placeholder="seu@email.com" />
-        </div>
-        <div>
-          <label class="block text-sm font-semibold mb-1">Senha</label>
-          <input type="password" name="senha" required class="w-full rounded-xl border border-slate-300 px-4 py-3 focus:border-lima focus:outline-none" placeholder="••••••••" />
-        </div>
-        <div id="loginErro" class="hidden text-sm text-red-600 font-sans"></div>
-        <button type="submit" class="w-full inline-flex items-center justify-center rounded-full bg-petroleo text-white px-6 py-3 font-bold hover:bg-lima hover:text-petroleo transition">Entrar</button>
-        <p class="text-xs text-slate-500 text-center font-sans">Ainda não tem acesso? Efetue o pagamento acima.</p>
-      </form>
+   <!-- Já é aluno -->
+    <div class="flex flex-col justify-center">
+      <div class="text-xs uppercase tracking-widest font-bold text-lima mb-3">Já é aluno?</div>
+      <h2 class="text-4xl md:text-5xl mb-2 text-primary">Bem-vindo de volta</h2>
+      <p class="text-muted mb-8 font-sans">Acesse sua área e baixe suas planilhas quando quiser.</p>
+      <a href="login.html" class="inline-flex items-center justify-center rounded-full bg-primary text-white px-8 py-4 text-base font-bold hover:scale-[1.02] transition w-fit">
+        Entrar na área do aluno →
+      </a>
     </div>
-
   </div>
 </main>
 
@@ -91,21 +99,6 @@
   const msg = encodeURIComponent(`Olá! Quero comprar a planilha ${p.nome} (${p.preco}). Como faço o pagamento?`);
   document.getElementById("btnPagar").href = `https://wa.me/5517982309000?text=${msg}`;
 
-  // Login (demo)
-  const CLIENTES = [
-    { email:"aluno@exemplo.com", senha:"goteam123", nome:"Aluno Demo", planilhas:["5K","10K","21K"] }
-  ];
-  document.getElementById("loginForm").addEventListener("submit", (e)=>{
-    e.preventDefault();
-    const fd = new FormData(e.target);
-    const email = String(fd.get("email")||"").trim().toLowerCase();
-    const senha = String(fd.get("senha")||"");
-    const user = CLIENTES.find(c=>c.email===email && c.senha===senha);
-    const erro = document.getElementById("loginErro");
-    if (!user){ erro.textContent = "E-mail ou senha inválidos."; erro.classList.remove("hidden"); return; }
-    sessionStorage.setItem("goteam_user", JSON.stringify({ email:user.email, nome:user.nome, planilhas:user.planilhas }));
-    location.href = "area.html";
-  });
 </script>
 </body>
 </html>
