@@ -6,6 +6,8 @@
   <title>Área do Aluno · Go Team</title>
   <meta name="description" content="Acesse sua planilha de treino Go Team." />
   <link rel="icon" href="assets/go-team-logo.png" type="image/png" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0d3b45" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -139,6 +141,14 @@
       sessionStorage.setItem("goteam_user", JSON.stringify({ email: user.email, nome: user.nome, planilhas: user.planilhas }));
       location.href = "area.html";
     });
+  </script>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/goteam/sw.js");
+      });
+    }
   </script>
 </body>
 </html>
