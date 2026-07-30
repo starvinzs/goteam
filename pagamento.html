@@ -5,9 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Pagamento — Go Team</title>
 <link rel="icon" href="assets/go-team-logo.png" type="image/png" />
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#0d3b45" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
   :root {
@@ -33,10 +34,10 @@
 </head>
 <body class="min-h-screen">
 
-<header class="bg-white border-b border-slate-200">
+<header class="border-b border-border bg-white/80 backdrop-blur-lg sticky top-0 z-40">
   <div class="mx-auto max-w-6xl px-4 md:px-8 h-16 flex items-center justify-between">
     <a href="index.html" class="flex items-center gap-2"><img src="assets/go-team-logo.png" alt="Go Team" class="h-10 w-auto" /></a>
-    <a href="index.html" class="text-sm font-semibold hover:text-limaDark">← Voltar</a>
+    <a href="index.html" class="text-sm font-semibold hover:text-primary transition">← Voltar</a>
   </div>
 </header>
 
@@ -45,32 +46,36 @@
 
     <!-- Plano -->
     <div>
-      <div class="text-xs uppercase tracking-widest font-bold text-limaDark mb-3">Resumo do pedido</div>
-      <h1 class="text-4xl md:text-5xl mb-2">Planilha <span id="planoNome" class="text-petroleo">—</span></h1>
-      <p id="planoDesc" class="text-slate-600 mb-8 font-sans"></p>
+      <div class="text-xs uppercase tracking-widest font-bold text-lima mb-3">Resumo do pedido</div>
+      <h1 class="text-4xl md:text-5xl mb-2 text-primary">Planilha <span id="planoNome" class="text-primary">—</span></h1>
+      <p id="planoDesc" class="text-muted mb-8 font-sans"></p>
 
-      <div class="rounded-3xl bg-white p-8 shadow-sm border border-slate-200">
-        <div class="flex items-baseline justify-between mb-6 pb-6 border-b border-slate-200">
+      <div class="rounded-3xl bg-secondary p-8 shadow-elegant border border-border">
+        <div class="flex items-baseline justify-between mb-6 pb-6 border-b border-border">
           <div>
-            <div class="text-sm text-slate-500 font-sans">Valor</div>
-            <div id="planoPreco" class="text-4xl font-black text-petroleo">R$ —</div>
+            <div class="text-sm text-muted font-sans">Valor</div>
+            <div id="planoPreco" class="text-4xl font-black text-primary">R$ —</div>
           </div>
-          <div id="planoBadge" class="rounded-full bg-lima px-4 py-1 text-xs font-bold uppercase tracking-wider text-petroleo">—</div>
+          <div id="planoBadge" class="rounded-full bg-lima px-4 py-1 text-xs font-bold uppercase tracking-wider text-primary">—</div>
         </div>
 
         <ul id="planoFeatures" class="space-y-3 mb-8 text-sm font-sans"></ul>
 
-        <a id="btnPagar" href="#" target="_blank" rel="noreferrer" class="w-full inline-flex items-center justify-center gap-2 rounded-full bg-[#25D366] text-white px-6 py-4 text-base font-bold hover:scale-[1.02] transition">
-          💬 Pagar e confirmar via WhatsApp
+        <a id="btnPagar" href="#" target="_blank" rel="noreferrer" class="w-full inline-flex items-center justify-center gap-2 rounded-full bg-lima text-primary px-6 py-4 text-base font-bold hover:scale-[1.02] transition">
+          Pagar com Pix →
         </a>
 
-        <div class="mt-6 rounded-2xl bg-slate-50 p-4 text-sm text-slate-600 font-sans">
-          <strong class="text-petroleo">Como funciona:</strong> após confirmar seu pagamento via PIX pelo WhatsApp, você recebe seu login e senha para acessar a área do aluno e baixar sua planilha.
+        <div class="mt-6 rounded-2xl bg-white p-4 text-sm text-muted font-sans border border-border">
+          <strong class="text-primary">Como funciona:</strong> após o pagamento via Pix, entre em contato pelo WhatsApp para receber seu login e senha de acesso à área do aluno.
         </div>
+
+        <a href="https://wa.me/5517982309000?text=Olá!%20Já%20fiz%20o%20pagamento%20da%20planilha%20e%20quero%20receber%20meu%20acesso." target="_blank" rel="noreferrer" class="mt-3 w-full inline-flex items-center justify-center gap-2 rounded-full border border-border text-primary px-6 py-3 text-sm font-semibold hover:bg-secondary transition">
+          💬 Já paguei, quero meu acesso
+        </a>
       </div>
     </div>
 
-   <!-- Já é aluno -->
+    <!-- Já é aluno -->
     <div class="flex flex-col justify-center">
       <div class="text-xs uppercase tracking-widest font-bold text-lima mb-3">Já é aluno?</div>
       <h2 class="text-4xl md:text-5xl mb-2 text-primary">Bem-vindo de volta</h2>
@@ -79,14 +84,15 @@
         Entrar na área do aluno →
       </a>
     </div>
+
   </div>
 </main>
 
 <script>
   const PLANOS = {
-    "5K":  { nome:"5K — Primeiros Passos", desc:"Ideal para iniciantes que querem cruzar a primeira linha de chegada.", preco:"R$ 79", badge:"Iniciante", features:["8 semanas de treino","Progressão caminhada + corrida","Suporte via WhatsApp","Dicas de respiração e postura"] },
-    "10K": { nome:"10K — Evolução",         desc:"Para quem já corre e quer ganhar ritmo e resistência.",              preco:"R$ 99", badge:"Mais popular", features:["10 semanas de treino","Treinos intervalados","Fortalecimento específico","Estratégia de prova"] },
-    "21K": { nome:"21K — Meia Maratona",    desc:"Preparação estruturada e periodizada para a meia maratona.",         preco:"R$ 149", badge:"Avançado", features:["12 semanas de treino","Long runs progressivos","Estratégia nutricional","Análise de pace"] }
+    "5K":  { nome:"5K — Primeiros Passos", desc:"Ideal para iniciantes que querem cruzar a primeira linha de chegada.", preco:"R$ 79,90", badge:"Iniciante", features:["8 semanas de treino","Progressão caminhada + corrida","Suporte via WhatsApp","Dicas de respiração e postura"], link:"https://mpago.la/2U9my8S" },
+    "10K": { nome:"10K — Evolução",         desc:"Para quem já corre e quer ganhar ritmo e resistência.",              preco:"R$ 89,90", badge:"Mais popular", features:["10 semanas de treino","Treinos intervalados","Fortalecimento específico","Estratégia de prova"], link:"https://mpago.la/2XMYspv" },
+    "21K": { nome:"21K — Meia Maratona",    desc:"Preparação estruturada e periodizada para a meia maratona.",         preco:"R$ 99,90", badge:"Avançado", features:["12 semanas de treino","Long runs progressivos","Estratégia nutricional","Análise de pace"], link:"https://mpago.la/1i9Eaqu" }
   };
   const params = new URLSearchParams(location.search);
   const plano = (params.get("plano") || "10K").toUpperCase();
@@ -95,10 +101,16 @@
   document.getElementById("planoDesc").textContent = p.desc;
   document.getElementById("planoPreco").textContent = p.preco;
   document.getElementById("planoBadge").textContent = p.badge;
-  document.getElementById("planoFeatures").innerHTML = p.features.map(f=>`<li class="flex items-start gap-2"><span class="mt-0.5 w-4 h-4 rounded-full bg-lima text-petroleo flex items-center justify-center text-[10px] font-black">✓</span>${f}</li>`).join("");
-  const msg = encodeURIComponent(`Olá! Quero comprar a planilha ${p.nome} (${p.preco}). Como faço o pagamento?`);
-  document.getElementById("btnPagar").href = `https://wa.me/5517982309000?text=${msg}`;
+  document.getElementById("planoFeatures").innerHTML = p.features.map(f=>`<li class="flex items-start gap-2"><span class="mt-0.5 w-4 h-4 rounded-full bg-lima text-primary flex items-center justify-center text-[10px] font-black">✓</span>${f}</li>`).join("");
+  document.getElementById("btnPagar").href = p.link;
+</script>
 
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("/goteam/sw.js");
+    });
+  }
 </script>
 </body>
 </html>
