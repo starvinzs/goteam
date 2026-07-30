@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+c<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
@@ -7,6 +7,8 @@
   <meta name="description" content="Visualize ou baixe suas planilhas de treino." />
   <meta name="robots" content="noindex" />
   <link rel="icon" href="assets/go-team-logo.png" type="image/png" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0d3b45" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -157,6 +159,14 @@
       document.getElementById("comPlanilhas").classList.remove("hidden");
       renderTabs();
       renderPlanilha();
+    }
+  </script>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/goteam/sw.js");
+      });
     }
   </script>
 </body>
