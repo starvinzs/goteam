@@ -10,6 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root {
     --petroleo: oklch(0.38 0.07 220);
@@ -69,24 +70,93 @@
           <strong class="text-primary">Como funciona:</strong> após o pagamento via Pix, entre em contato pelo WhatsApp para receber seu login e senha de acesso à área do aluno.
         </div>
 
-        <a href="https://wa.me/5517982309000?text=Olá!%20Já%20fiz%20o%20pagamento%20da%20planilha%20e%20quero%20receber%20meu%20acesso." target="_blank" rel="noreferrer" class="mt-3 w-full inline-flex items-center justify-center gap-2 rounded-full border border-border text-primary px-6 py-3 text-sm font-semibold hover:bg-secondary transition">
-          💬 Já paguei, quero meu acesso
-        </a>
       </div>
     </div>
 
-    <!-- Já é aluno -->
-    <div class="flex flex-col justify-center">
-      <div class="text-xs uppercase tracking-widest font-bold text-lima mb-3">Já é aluno?</div>
-      <h2 class="text-4xl md:text-5xl mb-2 text-primary">Bem-vindo de volta</h2>
-      <p class="text-muted mb-8 font-sans">Acesse sua área e baixe suas planilhas quando quiser.</p>
-      <a href="login.html" class="inline-flex items-center justify-center rounded-full bg-primary text-white px-8 py-4 text-base font-bold hover:scale-[1.02] transition w-fit">
-        Entrar na área do aluno →
-      </a>
+    <!-- Criar acesso após pagamento -->
+    <div>
+      <div class="text-xs uppercase tracking-widest font-bold text-lima mb-3">Já pagou?</div>
+      <h2 class="text-4xl md:text-5xl mb-2 text-primary">Crie seu acesso</h2>
+      <p class="text-muted mb-8 font-sans">Depois de pagar com Pix, crie seu login para acessar sua planilha em qualquer aparelho.</p>
+
+      <form id="cadastroForm" class="bg-secondary rounded-3xl p-8 border border-border shadow-elegant space-y-4">
+        <div>
+          <label class="block text-sm font-bold uppercase tracking-widest text-muted mb-2">Nome</label>
+          <input type="text" name="nome" required class="w-full rounded-2xl border-2 border-border bg-white px-5 py-3 text-base focus:border-lima focus:outline-none transition" placeholder="Seu nome completo" />
+        </div>
+        <div>
+          <label class="block text-sm font-bold uppercase tracking-widest text-muted mb-2">E-mail</label>
+          <input type="email" name="email" required class="w-full rounded-2xl border-2 border-border bg-white px-5 py-3 text-base focus:border-lima focus:outline-none transition" placeholder="seu@email.com" />
+        </div>
+        <div>
+          <label class="block text-sm font-bold uppercase tracking-widest text-muted mb-2">Criar senha</label>
+          <input type="password" name="senha" required minlength="6" class="w-full rounded-2xl border-2 border-border bg-white px-5 py-3 text-base focus:border-lima focus:outline-none transition" placeholder="Mínimo 6 caracteres" />
+        </div>
+        <div id="cadastroErro" class="hidden text-sm font-semibold text-red-600"></div>
+        <div id="cadastroSucesso" class="hidden text-sm font-semibold text-green-700"></div>
+        <button type="submit" id="btnCadastrar" class="w-full inline-flex items-center justify-center rounded-full bg-primary text-white px-6 py-4 text-base font-bold hover:bg-lima hover:text-primary transition">
+          Criar meu acesso
+        </button>
+      </form>
+
+      <div class="mt-6 text-center">
+        <p class="text-sm text-muted mb-2">Já tem conta?</p>
+        <a href="login.html" class="text-sm font-bold text-primary hover:text-lima transition">Entrar na área do aluno →</a>
+      </div>
     </div>
 
   </div>
 </main>
+
+<script>
+  const SUPABASE_URL = "https://euteamspjorplhtopjzf.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_DRPo2RBO9EQv7TSCeVT34A_A4IFK39v";
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  document.getElementById("cadastroForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const nome = String(fd.get("nome") || "").trim();
+    const email = String(fd.get("email") || "").trim().toLowerCase();
+    const senha = String(fd.get("senha") || "");
+    const erroEl = document.getElementById("cadastroErro");
+    const sucessoEl = document.getElementById("cadastroSucesso");
+    const btn = document.getElementById("btnCadastrar");
+
+    erroEl.classList.add("hidden");
+    sucessoEl.classList.add("hidden");
+    btn.disabled = true;
+    btn.textContent = "Criando...";
+
+    const { data, error } = await supabaseClient.auth.signUp({ email, password: senha });
+
+    if (error) {
+      erroEl.textContent = error.message.includes("already registered")
+        ? "Este e-mail já tem cadastro. Faça login."
+        : "Erro ao criar acesso: " + error.message;
+      erroEl.classList.remove("hidden");
+      btn.disabled = false;
+      btn.textContent = "Criar meu acesso";
+      return;
+    }
+
+    const userId = data.user?.id;
+    if (userId) {
+      await supabaseClient.from("perfis").insert({
+        id: userId,
+        nome: nome,
+        plano: plano,
+        pago: false
+      });
+    }
+
+    sucessoEl.textContent = "Conta criada! Verifique seu e-mail para confirmar, depois faça login na área do aluno.";
+    sucessoEl.classList.remove("hidden");
+    e.target.reset();
+    btn.disabled = false;
+    btn.textContent = "Criar meu acesso";
+  });
+</script>
 
 <script>
   const PLANOS = {
