@@ -12,6 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
       --petroleo: oklch(0.38 0.07 220);
@@ -121,24 +122,32 @@
   </section>
 
   <script>
-    const CLIENTES = [
-      { email: "aluno@exemplo.com", senha: "goteam123", nome: "Aluno Exemplo", planilhas: ["5K"] }
-    ];
+    const SUPABASE_URL = "https://euteamspjorplhtopjzf.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_DRPo2RBO9EQv7TSCeVT34A_A4IFK39v";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    document.getElementById("loginForm").addEventListener("submit", (e) => {
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const fd = new FormData(e.target);
       const email = String(fd.get("email") || "").trim().toLowerCase();
       const senha = String(fd.get("senha") || "");
-      const user = CLIENTES.find(c => c.email === email && c.senha === senha);
       const erro = document.getElementById("erro");
-      if (!user) {
+      const btn = e.target.querySelector("button[type='submit']");
+
+      erro.classList.add("hidden");
+      btn.disabled = true;
+      btn.textContent = "Entrando...";
+
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password: senha });
+
+      if (error) {
         erro.textContent = "E-mail ou senha inválidos.";
         erro.classList.remove("hidden");
+        btn.disabled = false;
+        btn.textContent = "Entrar";
         return;
       }
-      erro.classList.add("hidden");
-      sessionStorage.setItem("goteam_user", JSON.stringify({ email: user.email, nome: user.nome, planilhas: user.planilhas }));
+
       location.href = "area.html";
     });
   </script>
