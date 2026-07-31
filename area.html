@@ -1,4 +1,4 @@
-c<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
@@ -13,6 +13,7 @@ c<!DOCTYPE html>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
       --petroleo: oklch(0.38 0.07 220);
@@ -110,9 +111,9 @@ c<!DOCTYPE html>
   </section>
 
   <script>
-    const raw = sessionStorage.getItem("goteam_user");
-    if (!raw) { location.href = "login.html"; }
-    const user = JSON.parse(raw);
+    const SUPABASE_URL = "https://euteamspjorplhtopjzf.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_DRPo2RBO9EQv7TSCeVT34A_A4IFK39v";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     const PLANILHAS = {
       "5K": { titulo: "Primeiros Passos — 5K", arquivo: "planilhas/planilha-5k.pdf" },
@@ -120,13 +121,7 @@ c<!DOCTYPE html>
       "21K": { titulo: "Meia Maratona — 21K", arquivo: "planilhas/planilha-21k.pdf" }
     };
 
-    document.getElementById("saudacao").innerHTML = `Olá, <strong class="text-foreground">${user.nome}</strong>`;
-    document.getElementById("btnSair").addEventListener("click", () => {
-      sessionStorage.removeItem("goteam_user");
-      location.href = "login.html";
-    });
-
-    let ativa = user.planilhas[0] || null;
+    let ativa = null;
 
     function renderPlanilha() {
       const p = ativa ? PLANILHAS[ativa] : null;
@@ -137,9 +132,9 @@ c<!DOCTYPE html>
       document.getElementById("btnBaixar").href = p.arquivo;
     }
 
-    function renderTabs() {
+    function renderTabs(planos) {
       const container = document.getElementById("tabs");
-      container.innerHTML = user.planilhas.map(d => `
+      container.innerHTML = planos.map(d => `
         <button data-key="${d}" class="btn-tab px-6 py-3 rounded-full text-sm font-bold transition ${ativa === d ? 'active' : ''}">
           Planilha ${d}
         </button>
@@ -147,19 +142,49 @@ c<!DOCTYPE html>
       container.querySelectorAll("button").forEach(btn => {
         btn.addEventListener("click", () => {
           ativa = btn.dataset.key;
-          renderTabs();
+          renderTabs(planos);
           renderPlanilha();
         });
       });
     }
 
-    if (!user.planilhas || user.planilhas.length === 0) {
-      document.getElementById("semPlanilhas").classList.remove("hidden");
-    } else {
+    async function iniciar() {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) { location.href = "login.html"; return; }
+
+      const { data: perfil, error } = await supabaseClient
+        .from("perfis")
+        .select("nome, plano, pago")
+        .eq("id", session.user.id)
+        .single();
+
+      if (error || !perfil) {
+        document.getElementById("semPlanilhas").classList.remove("hidden");
+        return;
+      }
+
+      document.getElementById("saudacao").innerHTML = `Olá, <strong class="text-foreground">${perfil.nome}</strong>`;
+
+      if (!perfil.pago) {
+        document.getElementById("semPlanilhas").classList.remove("hidden");
+        document.getElementById("semPlanilhas").querySelector("p").textContent =
+          "Seu pagamento ainda está sendo confirmado. Assim que aprovado, sua planilha aparece aqui.";
+        return;
+      }
+
+      const planos = [perfil.plano];
+      ativa = planos[0];
       document.getElementById("comPlanilhas").classList.remove("hidden");
-      renderTabs();
+      renderTabs(planos);
       renderPlanilha();
     }
+
+    document.getElementById("btnSair").addEventListener("click", async () => {
+      await supabaseClient.auth.signOut();
+      location.href = "login.html";
+    });
+
+    iniciar();
   </script>
 
   <script>
