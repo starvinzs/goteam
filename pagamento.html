@@ -128,7 +128,11 @@
     btn.disabled = true;
     btn.textContent = "Criando...";
 
-    const { data, error } = await supabaseClient.auth.signUp({ email, password: senha });
+    const { data, error } = await supabaseClient.auth.signUp({
+      email,
+      password: senha,
+      options: { data: { nome: nome, plano: plano } }
+    });
 
     if (error) {
       erroEl.textContent = error.message.includes("already registered")
