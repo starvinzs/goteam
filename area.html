@@ -152,13 +152,27 @@
       const { data: { session } } = await supabaseClient.auth.getSession();
       if (!session) { location.href = "login.html"; return; }
 
-      const { data: perfil, error } = await supabaseClient
+      let { data: perfil, error } = await supabaseClient
         .from("perfis")
         .select("nome, plano, pago")
         .eq("id", session.user.id)
         .single();
 
+      // Se o perfil ainda não existe (cadastro feito antes da confirmação de e-mail),
+      // cria agora usando os dados salvos no momento do cadastro.
       if (error || !perfil) {
+        const meta = session.user.user_metadata || {};
+        if (meta.nome && meta.plano) {
+          const { data: novoPerfil, error: erroCriacao } = await supabaseClient
+            .from("perfis")
+            .insert({ id: session.user.id, nome: meta.nome, plano: meta.plano, pago: false })
+            .select("nome, plano, pago")
+            .single();
+          if (!erroCriacao) perfil = novoPerfil;
+        }
+      }
+
+      if (!perfil) {
         document.getElementById("semPlanilhas").classList.remove("hidden");
         return;
       }
