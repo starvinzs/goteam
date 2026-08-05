@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Área do Aluno · Go Team</title>
+  <meta name="description" content="Acesse sua planilha de treino Go Team." />
+  <link rel="icon" href="assets/go-team-logo.png" type="image/png" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0d3b45" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --petroleo: oklch(0.38 0.07 220);
+      --petroleo-dark: oklch(0.28 0.06 220);
+      --lima: oklch(0.86 0.22 130);
+      --lima-hover: oklch(0.78 0.2 140);
+      --bg: oklch(1 0 0);
+      --fg: oklch(0.25 0.05 220);
+      --muted: oklch(0.5 0.03 220);
+      --secondary: oklch(0.96 0.02 220);
+      --border: oklch(0.9 0.02 220);
+      --gradient-hero: linear-gradient(135deg, oklch(0.32 0.06 220) 0%, oklch(0.42 0.08 215) 100%);
+      --shadow-elegant: 0 20px 60px -20px oklch(0.38 0.07 220 / 0.35);
+    }
+    body { font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--fg); }
+    h1, h2, h3, h4 { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; }
+    .gradient-hero { background: var(--gradient-hero); }
+    .text-primary { color: var(--petroleo); }
+    .bg-primary { background-color: var(--petroleo); }
+    .hover\:bg-lima:hover { background-color: var(--lima); color: var(--petroleo); }
+    .border-lima { border-color: var(--lima); }
+    .text-lima { color: var(--lima); }
+    .bg-secondary { background-color: var(--secondary); }
+    .text-muted { color: var(--muted); }
+    .border-border { border-color: var(--border); }
+    .shadow-elegant { box-shadow: var(--shadow-elegant); }
+    .focus\:border-lima:focus { border-color: var(--lima); outline: none; }
+    input::placeholder { color: oklch(0.7 0.03 220); }
+    .btn-primary { background-color: var(--petroleo); color: white; transition: all .2s; }
+    .btn-primary:hover { background-color: var(--lima); color: var(--petroleo); transform: scale(1.02); }
+    .btn-whatsapp { background-color: oklch(0.7 0.2 145); color: white; transition: all .2s; }
+    .btn-whatsapp:hover { transform: scale(1.02); }
+    .label-dist { color: oklch(0.5 0.15 140); }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+  <header class="border-b border-border bg-white/80 backdrop-blur-lg sticky top-0 z-40">
+    <div class="mx-auto max-w-5xl px-4 md:px-8 h-16 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-2">
+        <img src="assets/go-team-logo.png" alt="Go Team" class="h-10 w-auto" />
+      </a>
+      <a href="index.html" class="text-sm font-semibold hover:text-primary transition">← Voltar</a>
+    </div>
+  </header>
+
+  <section class="gradient-hero py-16 md:py-24">
+    <div class="mx-auto max-w-3xl px-4 md:px-8 text-center text-white">
+      <div class="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/20 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest mb-6">
+        Área do aluno
+      </div>
+      <h1 class="text-4xl md:text-6xl mb-4">Entre e acesse sua planilha</h1>
+      <p class="text-lg text-white/80">
+        Use o e-mail e a senha que enviamos após a confirmação do seu pagamento.
+      </p>
+    </div>
+  </section>
+
+  <section class="py-16 md:py-24 flex-1">
+    <div class="mx-auto max-w-md px-4 md:px-8">
+      <form id="loginForm" class="bg-secondary rounded-3xl p-8 md:p-10 border border-border shadow-elegant space-y-5">
+        <div>
+          <label for="email" class="block text-sm font-bold uppercase tracking-widest label-dist mb-2">
+            E-mail
+          </label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            required
+            autocomplete="email"
+            placeholder="seu@email.com"
+            class="w-full rounded-2xl border-2 border-border bg-white px-5 py-3 text-base focus:border-lima transition"
+          />
+        </div>
+        <div>
+          <label for="senha" class="block text-sm font-bold uppercase tracking-widest label-dist mb-2">
+            Senha
+          </label>
+          <input
+            id="senha"
+            name="senha"
+            type="password"
+            required
+            autocomplete="current-password"
+            placeholder="••••••••"
+            class="w-full rounded-2xl border-2 border-border bg-white px-5 py-3 text-base focus:border-lima transition"
+          />
+        </div>
+        <div id="erro" class="hidden text-sm font-semibold text-red-600"></div>
+        <button type="submit" class="btn-primary w-full inline-flex items-center justify-center rounded-full px-8 py-4 text-base font-bold">
+          Entrar
+        </button>
+      </form>
+
+      <div class="mt-8 text-center">
+        <p class="text-sm text-muted mb-3">Ainda não é aluno ou não recebeu seu acesso?</p>
+        <a
+          href="https://wa.me/5517982309000?text=Olá!%20Já%20efetuei%20o%20pagamento%20e%20quero%20receber%20meu%20acesso%20à%20área%20do%20aluno."
+          target="_blank"
+          rel="noreferrer"
+          class="btn-whatsapp inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold"
+        >
+          💬 Falar no WhatsApp
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const SUPABASE_URL = "https://euteamspjorplhtopjzf.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_DRPo2RBO9EQv7TSCeVT34A_A4IFK39v";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      const email = String(fd.get("email") || "").trim().toLowerCase();
+      const senha = String(fd.get("senha") || "");
+      const erro = document.getElementById("erro");
+      const btn = e.target.querySelector("button[type='submit']");
+
+      erro.classList.add("hidden");
+      btn.disabled = true;
+      btn.textContent = "Entrando...";
+
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password: senha });
+
+      if (error) {
+        erro.textContent = "E-mail ou senha inválidos.";
+        erro.classList.remove("hidden");
+        btn.disabled = false;
+        btn.textContent = "Entrar";
+        return;
+      }
+
+      location.href = "app.html";
+    });
+  </script>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/goteam/sw.js");
+      });
+    }
+  </script>
+</body>
+</html>
