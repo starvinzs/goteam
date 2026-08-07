@@ -45,7 +45,7 @@
 <main class="mx-auto max-w-6xl px-4 md:px-8 py-12">
   <div class="grid lg:grid-cols-2 gap-10">
 
-    <!-- Plano -->
+    <!-- Plano + Pagamento Pix -->
     <div>
       <div class="text-xs uppercase tracking-widest font-bold text-lima mb-3">Resumo do pedido</div>
       <h1 class="text-4xl md:text-5xl mb-2 text-primary">Planilha <span id="planoNome" class="text-primary">—</span></h1>
@@ -62,14 +62,18 @@
 
         <ul id="planoFeatures" class="space-y-3 mb-8 text-sm font-sans"></ul>
 
-        <a id="btnPagar" href="#" target="_blank" rel="noreferrer" class="w-full inline-flex items-center justify-center gap-2 rounded-full bg-lima text-primary px-6 py-4 text-base font-bold hover:scale-[1.02] transition">
-          Pagar com Pix →
-        </a>
-
-        <div class="mt-6 rounded-2xl bg-white p-4 text-sm text-muted font-sans border border-border">
-          <strong class="text-primary">Como funciona:</strong> após o pagamento via Pix, entre em contato pelo WhatsApp para receber seu login e senha de acesso à área do aluno.
+        <div class="bg-white rounded-2xl border border-border p-5 text-center">
+          <p class="text-xs uppercase tracking-widest font-bold text-muted mb-3">Pague com Pix</p>
+          <img id="qrCodePix" src="" alt="QR Code Pix" class="mx-auto rounded-xl border border-border mb-4" width="220" height="220" />
+          <button id="btnCopiarPix" class="w-full inline-flex items-center justify-center gap-2 rounded-full bg-lima text-primary px-6 py-3 text-sm font-bold hover:scale-[1.02] transition">
+            📋 Copiar código Pix
+          </button>
+          <p id="copiadoMsg" class="hidden text-xs text-green-700 font-semibold mt-2">Código copiado!</p>
         </div>
 
+        <div class="mt-6 rounded-2xl bg-white p-4 text-sm text-muted font-sans border border-border">
+          <strong class="text-primary">Como funciona:</strong> escaneie o QR Code com o app do seu banco, ou copie o código e cole na opção "Pix Copia e Cola". Depois de pagar, crie seu acesso ao lado para acompanhar seus treinos.
+        </div>
       </div>
     </div>
 
@@ -107,6 +111,53 @@
 
   </div>
 </main>
+
+<script>
+  // Códigos Pix "copia e cola" — gerados na conta do Itaú dedicada ao negócio
+  const PLANOS = {
+    "5K":  {
+      nome:"5K — Primeiros Passos", desc:"Ideal para iniciantes que querem cruzar a primeira linha de chegada.",
+      preco:"R$ 79,90", badge:"Iniciante",
+      features:["8 semanas de treino","Progressão caminhada + corrida","Suporte via WhatsApp","Dicas de respiração e postura"],
+      pix: "00020126590014BR.GOV.BCB.PIX0111327316518900222Planilha 5k - Go Team 520400005303986540579.905802BR5923LEANDRO IRINEU DA SILVA6009SAO PAULO622605227QHSvyzO3QVcuiQaMheHWU630468E1"
+    },
+    "10K": {
+      nome:"10K — Evolução", desc:"Para quem já corre e quer ganhar ritmo e resistência.",
+      preco:"R$ 89,90", badge:"Mais popular",
+      features:["10 semanas de treino","Treinos intervalados","Fortalecimento específico","Estratégia de prova"],
+      pix: "00020126600014BR.GOV.BCB.PIX0111327316518900223Planilha 10k - Go Team 520400005303986540589.905802BR5923LEANDRO IRINEU DA SILVA6009SAO PAULO622605225Bzs6Zr2iuJfGA9WsAvt1l63040F42"
+    },
+    "21K": {
+      nome:"21K — Meia Maratona", desc:"Preparação estruturada e periodizada para a meia maratona.",
+      preco:"R$ 99,90", badge:"Avançado",
+      features:["12 semanas de treino","Long runs progressivos","Estratégia nutricional","Análise de pace"],
+      pix: "00020126600014BR.GOV.BCB.PIX0111327316518900223Planilha 21k - Go Team 520400005303986540599.905802BR5923LEANDRO IRINEU DA SILVA6009SAO PAULO622605224n5CLP1qmHKVNvyTxpB7QS63044791"
+    }
+  };
+
+  const params = new URLSearchParams(location.search);
+  const plano = (params.get("plano") || "10K").toUpperCase();
+  const p = PLANOS[plano] || PLANOS["10K"];
+
+  document.getElementById("planoNome").textContent = p.nome;
+  document.getElementById("planoDesc").textContent = p.desc;
+  document.getElementById("planoPreco").textContent = p.preco;
+  document.getElementById("planoBadge").textContent = p.badge;
+  document.getElementById("planoFeatures").innerHTML = p.features.map(f=>`<li class="flex items-start gap-2"><span class="mt-0.5 w-4 h-4 rounded-full bg-lima text-primary flex items-center justify-center text-[10px] font-black">✓</span>${f}</li>`).join("");
+
+  document.getElementById("qrCodePix").src = "https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=" + encodeURIComponent(p.pix);
+
+  document.getElementById("btnCopiarPix").addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(p.pix);
+      const msg = document.getElementById("copiadoMsg");
+      msg.classList.remove("hidden");
+      setTimeout(() => msg.classList.add("hidden"), 3000);
+    } catch (e) {
+      alert("Não foi possível copiar automaticamente. Código Pix:\n\n" + p.pix);
+    }
+  });
+</script>
 
 <script>
   const SUPABASE_URL = "https://euteamspjorplhtopjzf.supabase.co";
@@ -160,23 +211,6 @@
     btn.disabled = false;
     btn.textContent = "Criar meu acesso";
   });
-</script>
-
-<script>
-  const PLANOS = {
-    "5K":  { nome:"5K — Primeiros Passos", desc:"Ideal para iniciantes que querem cruzar a primeira linha de chegada.", preco:"R$ 79,90", badge:"Iniciante", features:["8 semanas de treino","Progressão caminhada + corrida","Suporte via WhatsApp","Dicas de respiração e postura"], link:"https://mpago.la/2U9my8S" },
-    "10K": { nome:"10K — Evolução",         desc:"Para quem já corre e quer ganhar ritmo e resistência.",              preco:"R$ 89,90", badge:"Mais popular", features:["10 semanas de treino","Treinos intervalados","Fortalecimento específico","Estratégia de prova"], link:"https://mpago.la/2XMYspv" },
-    "21K": { nome:"21K — Meia Maratona",    desc:"Preparação estruturada e periodizada para a meia maratona.",         preco:"R$ 99,90", badge:"Avançado", features:["12 semanas de treino","Long runs progressivos","Estratégia nutricional","Análise de pace"], link:"https://mpago.la/1i9Eaqu" }
-  };
-  const params = new URLSearchParams(location.search);
-  const plano = (params.get("plano") || "10K").toUpperCase();
-  const p = PLANOS[plano] || PLANOS["10K"];
-  document.getElementById("planoNome").textContent = p.nome;
-  document.getElementById("planoDesc").textContent = p.desc;
-  document.getElementById("planoPreco").textContent = p.preco;
-  document.getElementById("planoBadge").textContent = p.badge;
-  document.getElementById("planoFeatures").innerHTML = p.features.map(f=>`<li class="flex items-start gap-2"><span class="mt-0.5 w-4 h-4 rounded-full bg-lima text-primary flex items-center justify-center text-[10px] font-black">✓</span>${f}</li>`).join("");
-  document.getElementById("btnPagar").href = p.link;
 </script>
 
 <script>
