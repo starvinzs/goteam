@@ -38,6 +38,7 @@
     .navitem { color: var(--muted); background: none; border: none; cursor: pointer; }
     .navitem.active { color: var(--petroleo); font-weight: 700; }
     .dia-hoje { background: oklch(0.86 0.22 130 / 0.12); border: 1.5px solid var(--lima-dark); }
+    .navitem-link { background: none; border: none; cursor: pointer; font-family: inherit; }
     .dia-feito { opacity: 0.55; text-decoration: line-through; }
   </style>
 </head>
@@ -45,19 +46,53 @@
 
   <!-- ==================== ABA: INICIO ==================== -->
   <section id="tab-inicio" class="tab-screen active">
-    <div class="bg-primary text-white px-5 pt-6 pb-6">
-      <div class="flex justify-between items-center mb-4">
-        <span id="saudacao" class="text-sm text-white/70">Olá</span>
-        <span class="text-white/70">🔔</span>
+    <div class="bg-primary text-white px-5 pt-6 pb-5">
+      <div class="flex items-center gap-3 mb-1">
+        <div id="avatarIniciaisInicio" class="rounded-full bg-lima text-primary flex items-center justify-center font-bold text-sm flex-none" style="width:44px;height:44px;">—</div>
+        <div>
+          <p id="saudacaoNomeInicio" class="text-white font-medium text-base leading-tight">—</p>
+          <p id="planoAtivoTitulo" class="text-white/60 text-xs leading-tight">—</p>
+        </div>
       </div>
-      <p class="text-sm text-white/60 mb-1">Plano ativo</p>
-      <p id="planoAtivoTitulo" class="text-xl font-medium mb-4">—</p>
-      <button id="btnIniciarCorrida" class="w-full bg-lima text-primary rounded-full py-3 font-bold">▶ Iniciar corrida</button>
     </div>
 
     <div class="px-5 py-4">
-      <p class="text-sm font-medium text-muted mb-2">Sua planilha</p>
-      <div id="resumoTreinosHoje" class="flex flex-col gap-2"></div>
+      <p class="text-sm font-medium text-muted mb-2">Esta semana</p>
+      <div class="grid grid-cols-3 gap-2">
+        <div class="bg-secondary rounded-xl p-3 text-center">
+          <p id="statTreinosSemana" class="text-base font-bold text-primary">—</p>
+          <p class="text-[11px] text-muted mt-0.5">Treinos feitos</p>
+        </div>
+        <div class="bg-secondary rounded-xl p-3 text-center">
+          <p id="statSemanaPlano" class="text-base font-bold text-primary">—</p>
+          <p class="text-[11px] text-muted mt-0.5">Semana do plano</p>
+        </div>
+        <div class="bg-secondary rounded-xl p-3 text-center">
+          <p id="statTotalPlano" class="text-base font-bold text-primary">—</p>
+          <p class="text-[11px] text-muted mt-0.5">Treinos no plano</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="px-5 pb-2">
+      <p class="text-sm font-medium text-muted mb-2">Semanas do plano</p>
+      <div class="bg-secondary rounded-2xl p-4 border border-border">
+        <div id="graficoSemanas" class="flex items-end gap-1.5" style="height:70px;"></div>
+      </div>
+    </div>
+
+    <div class="px-5 py-4">
+      <div class="dia-hoje rounded-xl px-4 py-3 mb-3">
+        <p class="text-[11px] font-bold text-lima mb-0.5">TREINO DE HOJE</p>
+        <p id="treinoHojeTexto" class="text-sm font-semibold">—</p>
+      </div>
+      <button id="btnIniciarCorrida" class="w-full bg-lima text-primary rounded-full py-3 font-bold mb-4">▶ Iniciar corrida</button>
+
+      <div class="flex flex-col divide-y divide-border border-t border-b border-border">
+        <button data-tab="treinos" class="navitem-link flex items-center justify-between py-3.5 w-full text-left"><span class="text-sm text-primary">🏃 Meus treinos</span><span class="text-muted">›</span></button>
+        <button data-tab="progresso" class="navitem-link flex items-center justify-between py-3.5 w-full text-left"><span class="text-sm text-primary">📊 Meu progresso</span><span class="text-muted">›</span></button>
+        <a href="area.html" class="flex items-center justify-between py-3.5"><span class="text-sm text-primary">📄 Minhas planilhas</span><span class="text-muted">›</span></a>
+      </div>
     </div>
   </section>
 
@@ -276,8 +311,37 @@
       document.getElementById("barraProgressoTreinos").style.width = Math.round(((idxHoje + 1) / 7) * 100) + "%";
     }
 
-    function renderResumo(cron) {
-      renderListaDias(cron, "resumoTreinosHoje", true);
+    function renderInicio(cron, criadoEm) {
+      const p = calcularProgressoPlano(criadoEm, cron);
+      document.getElementById("statSemanaPlano").textContent = p.semanaAtual + "/" + p.totalSemanas;
+      document.getElementById("statTotalPlano").textContent = p.treinosFeitos + "/" + p.totalTreinosPlano;
+
+      const treinosPorSemana = cron.dias.filter(function(d){ return d.desc !== "Descanso"; }).length;
+      const idxHoje = idxHojeNaSemana();
+      const treinosEstaSemana = cron.dias.filter(function(d, i){ return d.desc !== "Descanso" && i <= idxHoje; }).length;
+      document.getElementById("statTreinosSemana").textContent = treinosEstaSemana + "/" + treinosPorSemana;
+
+      // Gráfico simples: uma barra por semana do plano, semana atual destacada
+      const grafico = document.getElementById("graficoSemanas");
+      let barras = "";
+      for (let s = 1; s <= cron.semanas; s++) {
+        const concluida = s < p.semanaAtual;
+        const atual = s === p.semanaAtual;
+        const altura = concluida ? 100 : atual ? 60 : 25;
+        const cor = concluida || atual ? "background:var(--lima);" : "background:var(--border);";
+        barras += '<div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:4px;">' +
+          '<div style="width:100%; border-radius:4px; height:' + altura + '%; ' + cor + '"></div>' +
+          '<span style="font-size:9px; color:var(--muted);">' + s + '</span>' +
+          '</div>';
+      }
+      grafico.innerHTML = barras;
+
+      // Treino de hoje em destaque
+      const diaHoje = cron.dias[idxHoje];
+      const textoHoje = diaHoje.desc === "Descanso"
+        ? "Hoje é dia de descanso — aproveite para recuperar"
+        : obterDatasDaSemana()[idxHoje] + " - " + diaHoje.dia + " — " + diaHoje.desc;
+      document.getElementById("treinoHojeTexto").textContent = textoHoje;
     }
 
     function calcularProgressoPlano(criadoEm, cron) {
@@ -347,7 +411,9 @@
       document.getElementById("perfilLogado").classList.remove("hidden");
       document.getElementById("perfilNome").textContent = perfil.nome;
       document.getElementById("perfilEmail").textContent = session.user.email;
-      document.getElementById("avatarIniciais").textContent = perfil.nome.slice(0, 2).toUpperCase();
+      const iniciais = perfil.nome.slice(0, 2).toUpperCase();
+      document.getElementById("avatarIniciais").textContent = iniciais;
+      document.getElementById("avatarIniciaisInicio").textContent = iniciais;
       document.getElementById("perfilPlano").textContent = perfil.plano + " — " + nomeDoPlano(perfil.plano);
 
       const statusEl = document.getElementById("perfilStatusPago");
@@ -361,16 +427,19 @@
         statusEl.style.color = "oklch(0.5 0.15 60)";
       }
 
-      document.getElementById("saudacao").textContent = "Olá, " + perfil.nome.split(" ")[0];
+      document.getElementById("saudacaoNomeInicio").textContent = "Olá, " + perfil.nome.split(" ")[0];
 
-      if (!perfil.pago) return;
+      if (!perfil.pago) {
+        document.getElementById("planoAtivoTitulo").textContent = "Aguardando pagamento";
+        return;
+      }
 
       const cron = CRONOGRAMAS[perfil.plano];
       document.getElementById("planoAtivoTitulo").textContent = perfil.plano + " — " + nomeDoPlano(perfil.plano);
       document.getElementById("treinosPlanoTitulo").textContent = "Plano " + perfil.plano;
       document.getElementById("treinosSemanaTitulo").textContent = cron.semanas + " semanas";
 
-      renderResumo(cron);
+      renderInicio(cron, perfil.criado_em);
       renderTreinos(cron);
       renderProgresso(cron, perfil.criado_em);
     }
@@ -382,6 +451,10 @@
 
     document.getElementById("btnIniciarCorrida").addEventListener("click", function(){
       irPara("treinos");
+    });
+
+    document.querySelectorAll(".navitem-link").forEach(function(btn){
+      btn.addEventListener("click", function(){ irPara(btn.dataset.tab); });
     });
 
     carregarApp();
