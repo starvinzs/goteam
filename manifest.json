@@ -2,7 +2,7 @@
   "name": "Go Team — Assessoria de Corrida",
   "short_name": "Go Team",
   "description": "Planilhas de treino personalizadas para 5K, 10K e 21K. Todo corredor começa com o primeiro passo.",
-  "start_url": "/goteam/index.html",
+  "start_url": "/goteam/login.html",
   "scope": "/goteam/",
   "display": "standalone",
   "orientation": "portrait",
