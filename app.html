@@ -147,6 +147,33 @@
     </div>
 
     <div class="px-5 pb-6">
+      <p class="text-sm font-medium text-muted mb-2">Peso corporal</p>
+      <div class="bg-secondary rounded-2xl p-4 border border-border">
+        <div class="flex items-baseline justify-between mb-1">
+          <div>
+            <span id="pesoAtualValor" class="text-3xl font-black text-primary">—</span>
+            <span class="text-sm text-muted"> kg</span>
+          </div>
+          <span id="pesoAtualData" class="text-xs text-muted">—</span>
+        </div>
+        <p id="pesoVariacao" class="text-xs font-semibold mb-3"></p>
+
+        <svg id="graficoPeso" viewBox="0 0 300 90" style="width:100%; height:90px; display:block;"></svg>
+
+        <button id="btnRegistrarPeso" class="w-full mt-3 inline-flex items-center justify-center gap-2 rounded-full bg-primary text-white px-4 py-2.5 text-sm font-bold">
+          + Registrar peso
+        </button>
+
+        <form id="formRegistrarPeso" class="hidden mt-3 flex gap-2">
+          <input id="inputNovoPeso" type="number" step="0.1" min="20" max="300" required placeholder="Ex: 75,9"
+            class="flex-1 rounded-xl border-2 border-border bg-white px-3 py-2 text-sm focus:outline-none" style="border-color: var(--border);" />
+          <button type="submit" class="rounded-xl bg-lima text-primary px-4 py-2 text-sm font-bold">Salvar</button>
+        </form>
+        <p id="pesoErro" class="hidden text-xs font-semibold text-red-600 mt-2"></p>
+      </div>
+    </div>
+
+    <div class="px-5 pb-6">
       <div class="bg-secondary rounded-2xl p-4 border border-border text-xs text-muted leading-relaxed">
         💡 Esse progresso é calculado com base no calendário do seu plano. Registro de corridas individuais (km, pace por treino) ainda não está disponível — é um passo futuro do app.
       </div>
@@ -375,6 +402,59 @@
       renderListaDias(cron, "resumoProgressoSemana", false);
     }
 
+    async function renderPeso(userId) {
+      const { data: registros } = await supabaseClient
+        .from("pesos")
+        .select("peso, registrado_em")
+        .eq("user_id", userId)
+        .order("registrado_em", { ascending: true });
+
+      if (!registros || registros.length === 0) {
+        document.getElementById("pesoAtualValor").textContent = "—";
+        document.getElementById("pesoAtualData").textContent = "Nenhum registro ainda";
+        document.getElementById("pesoVariacao").textContent = "";
+        document.getElementById("graficoPeso").innerHTML = "";
+        return;
+      }
+
+      const ultimo = registros[registros.length - 1];
+      document.getElementById("pesoAtualValor").textContent = Number(ultimo.peso).toFixed(1).replace(".", ",");
+      const dataUltimo = new Date(ultimo.registrado_em);
+      document.getElementById("pesoAtualData").textContent = dataUltimo.toLocaleDateString("pt-BR", { day: "2-digit", month: "short" });
+
+      const variacaoEl = document.getElementById("pesoVariacao");
+      if (registros.length > 1) {
+        const anterior = registros[registros.length - 2];
+        const diff = Number(ultimo.peso) - Number(anterior.peso);
+        const sinal = diff > 0 ? "+" : "";
+        variacaoEl.textContent = sinal + diff.toFixed(1).replace(".", ",") + " kg desde o último registro";
+        variacaoEl.style.color = diff < 0 ? "oklch(0.5 0.15 145)" : diff > 0 ? "oklch(0.5 0.15 30)" : "var(--muted)";
+      } else {
+        variacaoEl.textContent = "";
+      }
+
+      // Gráfico de linha simples em SVG (sem biblioteca externa)
+      const svg = document.getElementById("graficoPeso");
+      const pesos = registros.map(function(r){ return Number(r.peso); });
+      const min = Math.min.apply(null, pesos);
+      const max = Math.max.apply(null, pesos);
+      const faixa = (max - min) || 1;
+      const w = 300, h = 90, pad = 8;
+
+      const pontos = pesos.map(function(p, i){
+        const x = pesos.length === 1 ? w / 2 : pad + (i / (pesos.length - 1)) * (w - pad * 2);
+        const y = h - pad - ((p - min) / faixa) * (h - pad * 2);
+        return x + "," + y;
+      });
+
+      const linha = pontos.join(" ");
+      const area = "0," + h + " " + linha + " " + w + "," + h;
+
+      svg.innerHTML =
+        '<polygon points="' + area + '" fill="oklch(0.86 0.22 130 / 0.18)"></polygon>' +
+        '<polyline points="' + linha + '" fill="none" stroke="oklch(0.7 0.18 130)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></polyline>';
+    }
+
     async function carregarApp() {
       const sessaoResp = await supabaseClient.auth.getSession();
       const session = sessaoResp.data.session;
@@ -442,6 +522,7 @@
       renderInicio(cron, perfil.criado_em);
       renderTreinos(cron);
       renderProgresso(cron, perfil.criado_em);
+      await renderPeso(session.user.id);
     }
 
     document.getElementById("btnSairPerfil").addEventListener("click", async function(){
@@ -455,6 +536,44 @@
 
     document.querySelectorAll(".navitem-link").forEach(function(btn){
       btn.addEventListener("click", function(){ irPara(btn.dataset.tab); });
+    });
+
+    document.getElementById("btnRegistrarPeso").addEventListener("click", function(){
+      document.getElementById("formRegistrarPeso").classList.remove("hidden");
+      document.getElementById("btnRegistrarPeso").classList.add("hidden");
+      document.getElementById("inputNovoPeso").focus();
+    });
+
+    document.getElementById("formRegistrarPeso").addEventListener("submit", async function(e){
+      e.preventDefault();
+      const erroEl = document.getElementById("pesoErro");
+      erroEl.classList.add("hidden");
+
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) { location.href = "login.html"; return; }
+
+      const valor = parseFloat(document.getElementById("inputNovoPeso").value.replace(",", "."));
+      if (!valor || valor < 20 || valor > 300) {
+        erroEl.textContent = "Digite um peso válido (entre 20 e 300 kg).";
+        erroEl.classList.remove("hidden");
+        return;
+      }
+
+      const { error } = await supabaseClient.from("pesos").insert({
+        user_id: session.user.id,
+        peso: valor
+      });
+
+      if (error) {
+        erroEl.textContent = "Não foi possível salvar. Tente novamente.";
+        erroEl.classList.remove("hidden");
+        return;
+      }
+
+      document.getElementById("formRegistrarPeso").reset();
+      document.getElementById("formRegistrarPeso").classList.add("hidden");
+      document.getElementById("btnRegistrarPeso").classList.remove("hidden");
+      await renderPeso(session.user.id);
     });
 
     carregarApp();
