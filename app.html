@@ -84,13 +84,15 @@
     <div class="px-5 py-4">
       <div class="dia-hoje rounded-xl px-4 py-3 mb-3">
         <p class="text-[11px] font-bold text-lima mb-0.5">TREINO DE HOJE</p>
-        <p id="treinoHojeTexto" class="text-sm font-semibold">—</p>
+        <p id="treinoHojeTexto" class="text-sm font-semibold mb-2">—</p>
+        <button id="btnMarcarConcluido" class="w-full bg-primary text-white rounded-full py-2 text-sm font-bold">✓ Marcar como concluído</button>
       </div>
       <button id="btnIniciarCorrida" class="w-full bg-lima text-primary rounded-full py-3 font-bold mb-4">▶ Iniciar corrida</button>
 
       <div class="flex flex-col divide-y divide-border border-t border-b border-border">
         <button data-tab="treinos" class="navitem-link flex items-center justify-between py-3.5 w-full text-left"><span class="text-sm text-primary">🏃 Meus treinos</span><span class="text-muted">›</span></button>
         <button data-tab="progresso" class="navitem-link flex items-center justify-between py-3.5 w-full text-left"><span class="text-sm text-primary">📊 Meu progresso</span><span class="text-muted">›</span></button>
+        <button data-tab="evoluir" class="navitem-link flex items-center justify-between py-3.5 w-full text-left"><span class="text-sm text-primary">🚀 Evoluir</span><span class="text-muted">›</span></button>
         <a href="area.html" class="flex items-center justify-between py-3.5"><span class="text-sm text-primary">📄 Minhas planilhas</span><span class="text-muted">›</span></a>
       </div>
     </div>
@@ -142,8 +144,33 @@
     </div>
 
     <div class="px-5 pb-6">
-      <p class="text-sm font-medium text-muted mb-2">Esta semana</p>
-      <div id="resumoProgressoSemana" class="flex flex-col gap-2"></div>
+      <p class="text-sm font-medium text-muted mb-2">Sequência de treinos</p>
+      <div class="bg-secondary rounded-2xl p-4 border border-border">
+        <div class="flex items-center gap-3 mb-3">
+          <span style="font-size:22px;">🔥</span>
+          <div>
+            <p id="streakNumero" class="text-lg font-bold text-primary leading-tight">—</p>
+            <p class="text-[11px] text-muted">dias seguidos treinando</p>
+          </div>
+        </div>
+        <div id="streakDias" class="flex justify-between"></div>
+      </div>
+    </div>
+
+    <div class="px-5 pb-6">
+      <p class="text-sm font-medium text-muted mb-2">Calendário de treinos</p>
+      <div class="bg-secondary rounded-2xl p-4 border border-border">
+        <div class="flex justify-between items-center mb-3">
+          <button id="btnMesAnterior" class="text-muted text-sm px-1">‹</button>
+          <span id="calendarioMesTitulo" class="text-sm font-bold text-primary">—</span>
+          <button id="btnMesProximo" class="text-muted text-sm px-1">›</button>
+        </div>
+        <div class="grid grid-cols-7 gap-1 text-center mb-1">
+          <span class="text-[10px] text-muted">D</span><span class="text-[10px] text-muted">S</span><span class="text-[10px] text-muted">T</span><span class="text-[10px] text-muted">Q</span><span class="text-[10px] text-muted">Q</span><span class="text-[10px] text-muted">S</span><span class="text-[10px] text-muted">S</span>
+        </div>
+        <div id="calendarioGrade" class="grid grid-cols-7 gap-1"></div>
+        <p id="calendarioResumo" class="text-xs text-muted mt-3 text-center">—</p>
+      </div>
     </div>
 
     <div class="px-5 pb-6">
@@ -177,6 +204,44 @@
       <div class="bg-secondary rounded-2xl p-4 border border-border text-xs text-muted leading-relaxed">
         💡 Esse progresso é calculado com base no calendário do seu plano. Registro de corridas individuais (km, pace por treino) ainda não está disponível — é um passo futuro do app.
       </div>
+    </div>
+  </section>
+
+  <!-- ==================== ABA: EVOLUIR ==================== -->
+  <section id="tab-evoluir" class="tab-screen">
+    <div class="bg-primary text-white px-5 pt-6 pb-6">
+      <p class="text-sm text-white/60 mb-1">Seu próximo passo</p>
+      <p id="evoluirTitulo" class="text-xl font-medium">—</p>
+    </div>
+
+    <div class="px-5 py-5">
+      <div id="evoluirCardAtual" class="bg-secondary rounded-2xl p-4 border border-border mb-5">
+        <p class="text-[11px] uppercase tracking-wide text-muted mb-1">Plano atual</p>
+        <p id="evoluirPlanoAtual" class="text-base font-bold text-primary">—</p>
+        <div class="bg-border rounded-lg h-2 mt-3 overflow-hidden">
+          <div id="evoluirBarraAtual" class="bg-lima h-full rounded-lg" style="width:0%"></div>
+        </div>
+        <p id="evoluirFaltamText" class="text-xs text-muted mt-2">—</p>
+      </div>
+
+      <div id="evoluirSugestao" class="hidden">
+        <p class="text-sm font-medium text-muted mb-2">Recomendado para você</p>
+        <div class="rounded-2xl p-5 mb-5" style="background:#0d3b45; color:white;">
+          <p id="evoluirBadgeProximo" class="inline-block bg-lima text-primary text-[11px] font-bold px-3 py-1 rounded-full mb-3">—</p>
+          <p id="evoluirNomeProximo" class="text-2xl font-black mb-1">—</p>
+          <p id="evoluirDescProximo" class="text-sm text-white/75 mb-4">—</p>
+          <a id="btnEvoluirComprar" href="#" class="w-full inline-flex items-center justify-center bg-lima text-primary rounded-full py-3 text-sm font-bold">Quero evoluir →</a>
+        </div>
+      </div>
+
+      <div id="evoluirConcluido" class="hidden bg-secondary rounded-2xl p-5 border border-border text-center mb-5">
+        <p class="text-3xl mb-2">🏆</p>
+        <p class="text-base font-bold text-primary mb-1">Você chegou ao topo!</p>
+        <p class="text-sm text-muted">Você está no plano mais avançado da Go Team. Bora manter a constância!</p>
+      </div>
+
+      <p class="text-sm font-medium text-muted mb-2">Todos os planos</p>
+      <div id="evoluirTodosPlanos" class="flex flex-col gap-2"></div>
     </div>
   </section>
 
@@ -223,6 +288,7 @@
     <button data-tab="inicio" class="navitem flex flex-col items-center gap-0.5 text-[10px]"><span style="font-size:20px;">🏠</span>Início</button>
     <button data-tab="treinos" class="navitem flex flex-col items-center gap-0.5 text-[10px]"><span style="font-size:20px;">🏃</span>Treinos</button>
     <button data-tab="progresso" class="navitem flex flex-col items-center gap-0.5 text-[10px]"><span style="font-size:20px;">📊</span>Progresso</button>
+    <button data-tab="evoluir" class="navitem flex flex-col items-center gap-0.5 text-[10px]"><span style="font-size:20px;">🚀</span>Evoluir</button>
     <button data-tab="perfil" class="navitem flex flex-col items-center gap-0.5 text-[10px]"><span style="font-size:20px;">👤</span>Perfil</button>
   </nav>
 
@@ -289,6 +355,14 @@
       if (sigla === "10K") return "Evolução";
       return "Meia Maratona";
     }
+
+    // Ordem de evolução e dados de preço (mesmos valores usados em pagamento.html)
+    const ORDEM_PLANOS = ["5K", "10K", "21K"];
+    const PLANOS_INFO = {
+      "5K":  { preco: "R$ 79,90", desc: "8 semanas — ideal para cruzar a primeira linha de chegada." },
+      "10K": { preco: "R$ 89,90", desc: "10 semanas — ganhe ritmo e resistência." },
+      "21K": { preco: "R$ 99,90", desc: "12 semanas — preparação para a meia maratona." }
+    };
 
     // Índice de hoje dentro da semana: 0=Segunda ... 6=Domingo
     function idxHojeNaSemana() {
@@ -399,7 +473,186 @@
       document.getElementById("progressoTreinosFeitos").textContent = p.treinosFeitos + " / " + p.totalTreinosPlano;
       document.getElementById("progressoSemanaLabel").textContent = "Semana " + p.semanaAtual + " de " + p.totalSemanas;
       document.getElementById("barraProgressoGeral").style.width = Math.round((p.semanaAtual / p.totalSemanas) * 100) + "%";
-      renderListaDias(cron, "resumoProgressoSemana", false);
+    }
+
+    // ---------- Treinos concluídos (marcações reais do aluno) ----------
+    let diasConcluidosSet = new Set(); // strings "YYYY-MM-DD"
+    let mesCalendarioAtual = new Date().getMonth();
+    let anoCalendarioAtual = new Date().getFullYear();
+
+    function formatarDataISO(d) {
+      return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+    }
+
+    async function carregarDiasConcluidos(userId) {
+      const { data } = await supabaseClient
+        .from("treinos_concluidos")
+        .select("data")
+        .eq("user_id", userId);
+      diasConcluidosSet = new Set((data || []).map(function(r){ return r.data; }));
+    }
+
+    async function marcarTreinoConcluido(userId) {
+      const hojeISO = formatarDataISO(new Date());
+      const btn = document.getElementById("btnMarcarConcluido");
+      if (diasConcluidosSet.has(hojeISO)) {
+        btn.textContent = "✓ Treino de hoje já concluído";
+        btn.disabled = true;
+        return;
+      }
+      btn.disabled = true;
+      btn.textContent = "Salvando...";
+      const { error } = await supabaseClient.from("treinos_concluidos").insert({ user_id: userId, data: hojeISO });
+      if (!error) {
+        diasConcluidosSet.add(hojeISO);
+        btn.textContent = "✓ Treino de hoje já concluído";
+      } else {
+        btn.disabled = false;
+        btn.textContent = "✓ Marcar como concluído";
+      }
+      renderStreak();
+      renderCalendario();
+    }
+
+    function atualizarBotaoConcluido() {
+      const hojeISO = formatarDataISO(new Date());
+      const btn = document.getElementById("btnMarcarConcluido");
+      if (diasConcluidosSet.has(hojeISO)) {
+        btn.textContent = "✓ Treino de hoje já concluído";
+        btn.disabled = true;
+      } else {
+        btn.textContent = "✓ Marcar como concluído";
+        btn.disabled = false;
+      }
+    }
+
+    // ---------- Streak (sequência de dias treinados) ----------
+    function renderStreak() {
+      // Calcula streak: dias consecutivos (terminando hoje ou ontem) com treino concluído
+      let streak = 0;
+      const cursor = new Date();
+      if (!diasConcluidosSet.has(formatarDataISO(cursor))) {
+        cursor.setDate(cursor.getDate() - 1); // permite streak "vivo" até ontem
+      }
+      while (diasConcluidosSet.has(formatarDataISO(cursor))) {
+        streak++;
+        cursor.setDate(cursor.getDate() - 1);
+      }
+      document.getElementById("streakNumero").textContent = streak + (streak === 1 ? " dia" : " dias");
+
+      // Semana atual (Dom-Sáb) com marcação de dias treinados
+      const hoje = new Date();
+      const domingo = new Date(hoje);
+      domingo.setDate(hoje.getDate() - hoje.getDay());
+      const letras = ["D", "S", "T", "Q", "Q", "S", "S"];
+      let html = "";
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(domingo);
+        d.setDate(domingo.getDate() + i);
+        const iso = formatarDataISO(d);
+        const treinou = diasConcluidosSet.has(iso);
+        const ehHoje = iso === formatarDataISO(hoje);
+        const futuro = d > hoje;
+        let circulo;
+        if (treinou) {
+          circulo = '<div style="width:30px;height:30px;border-radius:50%;background:var(--lima);display:flex;align-items:center;justify-content:center;font-size:13px;">✓</div>';
+        } else if (futuro) {
+          circulo = '<div style="width:30px;height:30px;border-radius:50%;border:1.5px dashed var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--muted);">' + d.getDate() + '</div>';
+        } else {
+          circulo = '<div style="width:30px;height:30px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--muted);">' + d.getDate() + '</div>';
+        }
+        html += '<div style="display:flex;flex-direction:column;align-items:center;gap:4px;' + (ehHoje ? 'outline:1.5px solid var(--petroleo);border-radius:8px;padding:2px 4px;' : '') + '">' +
+          '<span style="font-size:10px;color:var(--muted);">' + letras[i] + '</span>' + circulo + '</div>';
+      }
+      document.getElementById("streakDias").innerHTML = html;
+    }
+
+    // ---------- Calendário mensal ----------
+    const MESES_NOMES = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+
+    function renderCalendario() {
+      document.getElementById("calendarioMesTitulo").textContent = MESES_NOMES[mesCalendarioAtual] + " " + anoCalendarioAtual;
+
+      const primeiroDia = new Date(anoCalendarioAtual, mesCalendarioAtual, 1);
+      const diasNoMes = new Date(anoCalendarioAtual, mesCalendarioAtual + 1, 0).getDate();
+      const offset = primeiroDia.getDay();
+
+      let html = "";
+      for (let i = 0; i < offset; i++) html += '<div></div>';
+
+      let contagemMes = 0;
+      const hoje = new Date();
+      for (let dia = 1; dia <= diasNoMes; dia++) {
+        const d = new Date(anoCalendarioAtual, mesCalendarioAtual, dia);
+        const iso = formatarDataISO(d);
+        const treinou = diasConcluidosSet.has(iso);
+        if (treinou) contagemMes++;
+        const ehHoje = formatarDataISO(hoje) === iso;
+        const estilo = treinou
+          ? 'background:var(--lima); color:var(--petroleo); font-weight:700;'
+          : 'background:var(--surface,transparent); color:var(--muted);';
+        const borda = ehHoje ? 'border:1.5px solid var(--petroleo);' : '';
+        html += '<div style="aspect-ratio:1; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:11px; ' + estilo + ' ' + borda + '">' + dia + '</div>';
+      }
+      document.getElementById("calendarioGrade").innerHTML = html;
+      document.getElementById("calendarioResumo").textContent = contagemMes + (contagemMes === 1 ? " treino registrado neste mês" : " treinos registrados neste mês");
+    }
+
+    document.getElementById("btnMesAnterior").addEventListener("click", function(){
+      mesCalendarioAtual--;
+      if (mesCalendarioAtual < 0) { mesCalendarioAtual = 11; anoCalendarioAtual--; }
+      renderCalendario();
+    });
+    document.getElementById("btnMesProximo").addEventListener("click", function(){
+      mesCalendarioAtual++;
+      if (mesCalendarioAtual > 11) { mesCalendarioAtual = 0; anoCalendarioAtual++; }
+      renderCalendario();
+    });
+
+    // ---------- Aba Evoluir ----------
+    function renderEvoluir(perfil, cron) {
+      const p = calcularProgressoPlano(perfil.criado_em, cron);
+      const percentual = Math.round((p.semanaAtual / p.totalSemanas) * 100);
+
+      document.getElementById("evoluirTitulo").textContent = perfil.nome.split(" ")[0] + ", continue evoluindo";
+      document.getElementById("evoluirPlanoAtual").textContent = perfil.plano + " — " + nomeDoPlano(perfil.plano);
+      document.getElementById("evoluirBarraAtual").style.width = percentual + "%";
+
+      const idx = ORDEM_PLANOS.indexOf(perfil.plano);
+      const proximoPlano = ORDEM_PLANOS[idx + 1];
+      const faltamSemanas = p.totalSemanas - p.semanaAtual;
+
+      if (proximoPlano) {
+        document.getElementById("evoluirFaltamText").textContent = faltamSemanas <= 0
+          ? "Você concluiu (ou está na última semana) do seu plano!"
+          : "Faltam " + faltamSemanas + (faltamSemanas === 1 ? " semana" : " semanas") + " para terminar este plano.";
+
+        document.getElementById("evoluirSugestao").classList.remove("hidden");
+        document.getElementById("evoluirConcluido").classList.add("hidden");
+        document.getElementById("evoluirBadgeProximo").textContent = "Próximo nível";
+        document.getElementById("evoluirNomeProximo").textContent = proximoPlano + " — " + nomeDoPlano(proximoPlano);
+        document.getElementById("evoluirDescProximo").textContent = PLANOS_INFO[proximoPlano].desc + " Por " + PLANOS_INFO[proximoPlano].preco + ".";
+        document.getElementById("btnEvoluirComprar").href = "pagamento.html?plano=" + proximoPlano;
+      } else {
+        document.getElementById("evoluirFaltamText").textContent = "Você está no plano mais completo da Go Team.";
+        document.getElementById("evoluirSugestao").classList.add("hidden");
+        document.getElementById("evoluirConcluido").classList.remove("hidden");
+      }
+
+      // Lista de todos os planos, com o atual destacado
+      const container = document.getElementById("evoluirTodosPlanos");
+      container.innerHTML = ORDEM_PLANOS.map(function(sigla){
+        const ativo = sigla === perfil.plano;
+        const info = PLANOS_INFO[sigla];
+        const estiloCard = ativo ? "border:1.5px solid var(--lima-dark); background: oklch(0.86 0.22 130 / 0.1);" : "border:1px solid var(--border); background:var(--secondary);";
+        return '<div class="rounded-xl p-3.5" style="' + estiloCard + '">' +
+          '<div class="flex justify-between items-center mb-1">' +
+            '<span class="text-sm font-bold text-primary">' + sigla + ' — ' + nomeDoPlano(sigla) + '</span>' +
+            (ativo ? '<span class="text-[10px] font-bold text-lima" style="color:var(--muted);">SEU PLANO</span>' : '<span class="text-xs font-bold text-primary">' + info.preco + '</span>') +
+          '</div>' +
+          '<p class="text-xs text-muted">' + info.desc + '</p>' +
+        '</div>';
+      }).join("");
     }
 
     async function renderPeso(userId) {
@@ -523,11 +776,23 @@
       renderTreinos(cron);
       renderProgresso(cron, perfil.criado_em);
       await renderPeso(session.user.id);
+
+      await carregarDiasConcluidos(session.user.id);
+      atualizarBotaoConcluido();
+      renderStreak();
+      renderCalendario();
+      renderEvoluir(perfil, cron);
     }
 
     document.getElementById("btnSairPerfil").addEventListener("click", async function(){
       await supabaseClient.auth.signOut();
       location.href = "login.html";
+    });
+
+    document.getElementById("btnMarcarConcluido").addEventListener("click", async function(){
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (!session) { location.href = "login.html"; return; }
+      await marcarTreinoConcluido(session.user.id);
     });
 
     document.getElementById("btnIniciarCorrida").addEventListener("click", function(){
