@@ -48,7 +48,12 @@
   <section id="tab-inicio" class="tab-screen active">
     <div class="bg-primary text-white px-5 pt-6 pb-5">
       <div class="flex items-center gap-3 mb-1">
-        <div id="avatarIniciaisInicio" class="rounded-full bg-lima text-primary flex items-center justify-center font-bold text-sm flex-none" style="width:44px;height:44px;">—</div>
+        <div class="relative flex-none">
+          <div id="avatarWrapInicio" class="rounded-full bg-lima text-primary flex items-center justify-center font-bold text-sm overflow-hidden" style="width:44px;height:44px;">
+            <span id="avatarIniciaisInicio">—</span>
+            <img id="avatarFotoInicio" src="" alt="" class="hidden w-full h-full object-cover" />
+          </div>
+        </div>
         <div>
           <p id="saudacaoNomeInicio" class="text-white font-medium text-base leading-tight">—</p>
           <p id="planoAtivoTitulo" class="text-white/60 text-xs leading-tight">—</p>
@@ -87,14 +92,7 @@
         <p id="treinoHojeTexto" class="text-sm font-semibold mb-2">—</p>
         <button id="btnMarcarConcluido" class="w-full bg-primary text-white rounded-full py-2 text-sm font-bold">✓ Marcar como concluído</button>
       </div>
-      <button id="btnIniciarCorrida" class="w-full bg-lima text-primary rounded-full py-3 font-bold mb-4">▶ Iniciar corrida</button>
-
-      <div class="flex flex-col divide-y divide-border border-t border-b border-border">
-        <button data-tab="treinos" class="navitem-link flex items-center justify-between py-3.5 w-full text-left"><span class="text-sm text-primary">🏃 Meus treinos</span><span class="text-muted">›</span></button>
-        <button data-tab="progresso" class="navitem-link flex items-center justify-between py-3.5 w-full text-left"><span class="text-sm text-primary">📊 Meu progresso</span><span class="text-muted">›</span></button>
-        <button data-tab="evoluir" class="navitem-link flex items-center justify-between py-3.5 w-full text-left"><span class="text-sm text-primary">🚀 Evoluir</span><span class="text-muted">›</span></button>
-        <a href="area.html" class="flex items-center justify-between py-3.5"><span class="text-sm text-primary">📄 Minhas planilhas</span><span class="text-muted">›</span></a>
-      </div>
+      <button id="btnIniciarCorrida" class="w-full bg-lima text-primary rounded-full py-3 font-bold">▶ Iniciar corrida</button>
     </div>
   </section>
 
@@ -128,6 +126,41 @@
           <p class="text-[11px] text-white/60 mt-0.5">Treinos no plano</p>
         </div>
       </div>
+    </div>
+
+    <div class="px-5 py-4">
+      <div class="flex items-center justify-between mb-2">
+        <p class="text-sm font-medium text-muted">Recentes</p>
+        <button id="btnMostrarFormAtividade" class="text-xs font-bold text-primary underline">+ Adicionar atividade</button>
+      </div>
+
+      <form id="formAtividade" class="hidden bg-secondary rounded-2xl p-4 border border-border mb-3 flex flex-col gap-3">
+        <div>
+          <label class="block text-[11px] font-bold uppercase tracking-wide text-muted mb-1">Distância (km)</label>
+          <input id="atividadeDistancia" type="number" step="0.01" min="0" required placeholder="Ex: 5.01"
+            class="w-full rounded-xl border-2 border-border bg-white px-3 py-2 text-sm focus:outline-none" />
+        </div>
+        <div class="flex gap-3">
+          <div class="flex-1">
+            <label class="block text-[11px] font-bold uppercase tracking-wide text-muted mb-1">Duração</label>
+            <input id="atividadeDuracao" type="text" required placeholder="mm:ss ou hh:mm:ss" pattern="^\d{1,2}:\d{2}(:\d{2})?$"
+              class="w-full rounded-xl border-2 border-border bg-white px-3 py-2 text-sm focus:outline-none" />
+          </div>
+          <div class="flex-1">
+            <label class="block text-[11px] font-bold uppercase tracking-wide text-muted mb-1">Data</label>
+            <input id="atividadeData" type="date" required
+              class="w-full rounded-xl border-2 border-border bg-white px-3 py-2 text-sm focus:outline-none" />
+          </div>
+        </div>
+        <p id="atividadeErro" class="hidden text-xs font-semibold text-red-600"></p>
+        <div class="flex gap-2">
+          <button type="submit" class="flex-1 rounded-full bg-primary text-white py-2.5 text-sm font-bold">Salvar</button>
+          <button type="button" id="btnCancelarAtividade" class="flex-1 rounded-full border border-border py-2.5 text-sm font-bold">Cancelar</button>
+        </div>
+      </form>
+
+      <div id="listaAtividadesRecentes" class="flex flex-col divide-y divide-border border-t border-b border-border mb-2"></div>
+      <p id="atividadesVazio" class="hidden text-xs text-muted text-center py-4">Nenhuma atividade registrada ainda.</p>
     </div>
 
     <div class="px-5 py-4">
@@ -202,7 +235,7 @@
 
     <div class="px-5 pb-6">
       <div class="bg-secondary rounded-2xl p-4 border border-border text-xs text-muted leading-relaxed">
-        💡 Esse progresso é calculado com base no calendário do seu plano. Registro de corridas individuais (km, pace por treino) ainda não está disponível — é um passo futuro do app.
+        💡 O progresso do plano é calculado com base no calendário. Já as atividades em "Recentes" são registradas manualmente por você.
       </div>
     </div>
   </section>
@@ -254,7 +287,14 @@
 
     <div id="perfilLogado" class="hidden">
       <div class="bg-primary px-5 pt-7 pb-6 flex items-center gap-4">
-        <div id="avatarIniciais" class="rounded-full bg-lima text-primary flex items-center justify-center font-bold text-base flex-none" style="width:52px;height:52px;">—</div>
+        <button id="btnEditarFoto" class="relative flex-none" style="width:52px;height:52px;" aria-label="Alterar foto de perfil">
+          <div id="avatarWrapPerfil" class="rounded-full bg-lima text-primary flex items-center justify-center font-bold text-base overflow-hidden w-full h-full">
+            <span id="avatarIniciais">—</span>
+            <img id="avatarFotoPerfil" src="" alt="" class="hidden w-full h-full object-cover" />
+          </div>
+          <div class="absolute -bottom-0.5 -right-0.5 bg-white rounded-full flex items-center justify-center border border-border" style="width:20px;height:20px;font-size:11px;">✏️</div>
+        </button>
+        <input id="inputFotoPerfil" type="file" accept="image/*" class="hidden" />
         <div>
           <p id="perfilNome" class="text-white font-medium text-lg">—</p>
           <p id="perfilEmail" class="text-white/60 text-xs">—</p>
@@ -708,6 +748,188 @@
         '<polyline points="' + linha + '" fill="none" stroke="oklch(0.7 0.18 130)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"></polyline>';
     }
 
+    function atualizarAvatarFoto(fotoUrl) {
+      const imgInicio = document.getElementById("avatarFotoInicio");
+      const spanInicio = document.getElementById("avatarIniciaisInicio");
+      const imgPerfil = document.getElementById("avatarFotoPerfil");
+      const spanPerfil = document.getElementById("avatarIniciais");
+      if (fotoUrl) {
+        imgInicio.src = fotoUrl;
+        imgInicio.classList.remove("hidden");
+        spanInicio.classList.add("hidden");
+        imgPerfil.src = fotoUrl;
+        imgPerfil.classList.remove("hidden");
+        spanPerfil.classList.add("hidden");
+      } else {
+        imgInicio.classList.add("hidden");
+        spanInicio.classList.remove("hidden");
+        imgPerfil.classList.add("hidden");
+        spanPerfil.classList.remove("hidden");
+      }
+    }
+
+    function comprimirImagem(file) {
+      return new Promise(function(resolve, reject) {
+        const leitor = new FileReader();
+        leitor.onerror = reject;
+        leitor.onload = function() {
+          const img = new Image();
+          img.onerror = reject;
+          img.onload = function() {
+            const tamanho = 320;
+            const canvas = document.createElement("canvas");
+            const lado = Math.min(img.width, img.height);
+            canvas.width = tamanho;
+            canvas.height = tamanho;
+            const ctx = canvas.getContext("2d");
+            const offsetX = (img.width - lado) / 2;
+            const offsetY = (img.height - lado) / 2;
+            ctx.drawImage(img, offsetX, offsetY, lado, lado, 0, 0, tamanho, tamanho);
+            resolve(canvas.toDataURL("image/jpeg", 0.82));
+          };
+          img.src = leitor.result;
+        };
+        leitor.readAsDataURL(file);
+      });
+    }
+
+    document.getElementById("btnEditarFoto").addEventListener("click", function() {
+      document.getElementById("inputFotoPerfil").click();
+    });
+
+    document.getElementById("inputFotoPerfil").addEventListener("change", async function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      if (!window.__userId) return;
+
+      try {
+        const dataUrl = await comprimirImagem(file);
+        atualizarAvatarFoto(dataUrl);
+        const { error } = await supabaseClient
+          .from("perfis")
+          .update({ foto_url: dataUrl })
+          .eq("id", window.__userId);
+        if (error) {
+          alert("Não foi possível salvar a foto. Tente uma imagem menor.");
+        }
+      } catch (err) {
+        alert("Não foi possível processar essa imagem.");
+      } finally {
+        e.target.value = "";
+      }
+    });
+
+    // ---------- Atividades registradas manualmente ----------
+    function formatarDuracao(segundos) {
+      const h = Math.floor(segundos / 3600);
+      const m = Math.floor((segundos % 3600) / 60);
+      const s = segundos % 60;
+      const pad2 = function(n){ return String(n).padStart(2, "0"); };
+      return h > 0 ? (pad2(h) + ":" + pad2(m) + ":" + pad2(s)) : ("00:" + pad2(m) + ":" + pad2(s));
+    }
+
+    function parseDuracaoParaSegundos(texto) {
+      const partes = texto.trim().split(":").map(Number);
+      if (partes.some(isNaN)) return null;
+      if (partes.length === 2) return partes[0] * 60 + partes[1];
+      if (partes.length === 3) return partes[0] * 3600 + partes[1] * 60 + partes[2];
+      return null;
+    }
+
+    function formatarDataAtividade(dataISO) {
+      const d = new Date(dataISO + "T00:00:00");
+      const dias = ["dom.", "seg.", "ter.", "qua.", "qui.", "sex.", "sáb."];
+      const diaSemana = dias[d.getDay()];
+      const pad2 = function(n){ return String(n).padStart(2, "0"); };
+      return diaSemana + ", " + pad2(d.getDate()) + "/" + pad2(d.getMonth() + 1) + "/" + d.getFullYear();
+    }
+
+    async function carregarAtividadesRecentes() {
+      const lista = document.getElementById("listaAtividadesRecentes");
+      const vazio = document.getElementById("atividadesVazio");
+      if (!window.__userId) return;
+
+      const { data: atividades, error } = await supabaseClient
+        .from("atividades_manuais")
+        .select("id, distancia_km, duracao_segundos, data")
+        .eq("user_id", window.__userId)
+        .order("data", { ascending: false })
+        .order("criado_em", { ascending: false })
+        .limit(5);
+
+      if (error) {
+        lista.innerHTML = "";
+        vazio.textContent = "Não foi possível carregar suas atividades.";
+        vazio.classList.remove("hidden");
+        return;
+      }
+
+      if (!atividades || atividades.length === 0) {
+        lista.innerHTML = "";
+        vazio.textContent = "Nenhuma atividade registrada ainda.";
+        vazio.classList.remove("hidden");
+        return;
+      }
+
+      vazio.classList.add("hidden");
+      lista.innerHTML = atividades.map(function(a) {
+        return '<div class="flex items-center gap-3 py-3">' +
+          '<span style="font-size:20px;">🏃</span>' +
+          '<div class="flex-1">' +
+            '<p class="text-sm font-bold text-primary">' + Number(a.distancia_km).toFixed(2).replace(".", ",") + ' km</p>' +
+            '<p class="text-xs text-muted">' + formatarDuracao(a.duracao_segundos) + ' &middot; ' + formatarDataAtividade(a.data) + '</p>' +
+          '</div>' +
+        '</div>';
+      }).join("");
+    }
+
+    document.getElementById("btnMostrarFormAtividade").addEventListener("click", function() {
+      const form = document.getElementById("formAtividade");
+      form.classList.toggle("hidden");
+      if (!form.classList.contains("hidden")) {
+        document.getElementById("atividadeData").value = new Date().toISOString().slice(0, 10);
+      }
+    });
+
+    document.getElementById("btnCancelarAtividade").addEventListener("click", function() {
+      document.getElementById("formAtividade").classList.add("hidden");
+      document.getElementById("atividadeErro").classList.add("hidden");
+    });
+
+    document.getElementById("formAtividade").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const erroEl = document.getElementById("atividadeErro");
+      erroEl.classList.add("hidden");
+
+      const distancia = parseFloat(document.getElementById("atividadeDistancia").value.replace(",", "."));
+      const duracaoTexto = document.getElementById("atividadeDuracao").value;
+      const data = document.getElementById("atividadeData").value;
+      const duracaoSegundos = parseDuracaoParaSegundos(duracaoTexto);
+
+      if (!distancia || distancia <= 0 || !duracaoSegundos || !data) {
+        erroEl.textContent = "Confira a distância e a duração (formato mm:ss).";
+        erroEl.classList.remove("hidden");
+        return;
+      }
+
+      const { error } = await supabaseClient.from("atividades_manuais").insert({
+        user_id: window.__userId,
+        distancia_km: distancia,
+        duracao_segundos: duracaoSegundos,
+        data: data
+      });
+
+      if (error) {
+        erroEl.textContent = "Não foi possível salvar. Tente novamente.";
+        erroEl.classList.remove("hidden");
+        return;
+      }
+
+      document.getElementById("formAtividade").reset();
+      document.getElementById("formAtividade").classList.add("hidden");
+      carregarAtividadesRecentes();
+    });
+
     async function carregarApp() {
       const sessaoResp = await supabaseClient.auth.getSession();
       const session = sessaoResp.data.session;
@@ -719,7 +941,7 @@
 
       let perfilResp = await supabaseClient
         .from("perfis")
-        .select("nome, plano, pago, criado_em")
+        .select("nome, plano, pago, criado_em, foto_url")
         .eq("id", session.user.id)
         .single();
       let perfil = perfilResp.data;
@@ -730,7 +952,7 @@
           const criacaoResp = await supabaseClient
             .from("perfis")
             .insert({ id: session.user.id, nome: meta.nome, plano: meta.plano, pago: false })
-            .select("nome, plano, pago, criado_em")
+            .select("nome, plano, pago, criado_em, foto_url")
             .single();
           perfil = criacaoResp.data;
         }
@@ -741,12 +963,15 @@
         return;
       }
 
+      window.__userId = session.user.id;
+
       document.getElementById("perfilLogado").classList.remove("hidden");
       document.getElementById("perfilNome").textContent = perfil.nome;
       document.getElementById("perfilEmail").textContent = session.user.email;
       const iniciais = perfil.nome.slice(0, 2).toUpperCase();
       document.getElementById("avatarIniciais").textContent = iniciais;
       document.getElementById("avatarIniciaisInicio").textContent = iniciais;
+      atualizarAvatarFoto(perfil.foto_url);
       document.getElementById("perfilPlano").textContent = perfil.plano + " — " + nomeDoPlano(perfil.plano);
 
       const statusEl = document.getElementById("perfilStatusPago");
@@ -775,6 +1000,7 @@
       renderInicio(cron, perfil.criado_em);
       renderTreinos(cron);
       renderProgresso(cron, perfil.criado_em);
+      carregarAtividadesRecentes();
       await renderPeso(session.user.id);
 
       await carregarDiasConcluidos(session.user.id);
