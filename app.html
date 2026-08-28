@@ -44,8 +44,8 @@
 </head>
 <body>
 
-  <!-- ==================== ABA: INICIO ==================== -->
-  <section id="tab-inicio" class="tab-screen active">
+  <!-- ==================== ABA: TREINOS ==================== -->
+  <section id="tab-treinos" class="tab-screen">
     <div class="bg-primary text-white px-5 pt-6 pb-5">
       <div class="flex items-center gap-3 mb-1">
         <div class="relative flex-none">
@@ -94,18 +94,15 @@
       </div>
       <button id="btnIniciarCorrida" class="w-full bg-lima text-primary rounded-full py-3 font-bold">▶ Iniciar corrida</button>
     </div>
-  </section>
 
-  <!-- ==================== ABA: TREINOS ==================== -->
-  <section id="tab-treinos" class="tab-screen">
-    <div class="bg-primary text-white px-5 pt-6 pb-5">
-      <p id="treinosPlanoTitulo" class="text-sm text-white/60 mb-1">Plano —</p>
-      <p id="treinosSemanaTitulo" class="text-xl font-medium">Semana —</p>
-      <div class="bg-white/15 rounded-lg h-1.5 mt-3 overflow-hidden">
+    <div class="px-5 pb-2">
+      <p id="treinosPlanoTitulo" class="text-sm font-medium text-muted mb-1">Plano —</p>
+      <p id="treinosSemanaTitulo" class="text-base font-bold text-primary mb-2">Semana —</p>
+      <div class="bg-secondary rounded-lg h-1.5 mb-4 overflow-hidden">
         <div id="barraProgressoTreinos" class="bg-lima h-full rounded-lg" style="width:0%"></div>
       </div>
     </div>
-    <div class="px-5 py-4 flex flex-col gap-2" id="listaTreinos"></div>
+    <div class="px-5 py-2 flex flex-col gap-2" id="listaTreinos"></div>
     <div class="px-5 pb-6">
       <a id="btnBaixarPlanilha" href="#" class="w-full inline-flex items-center justify-center bg-lima text-primary rounded-full py-3 font-bold">⬇ Baixar planilha completa</a>
     </div>
@@ -279,39 +276,56 @@
   </section>
 
   <!-- ==================== ABA: PERFIL ==================== -->
-  <section id="tab-perfil" class="tab-screen">
+  <section id="tab-perfil" class="tab-screen active">
     <div id="perfilDeslogado" class="hidden px-5 py-10">
       <p class="text-center text-muted mb-4">Você não está logado.</p>
       <a href="login.html" class="w-full inline-flex items-center justify-center bg-primary text-white rounded-full py-3 font-bold">Entrar</a>
     </div>
 
     <div id="perfilLogado" class="hidden">
-      <div class="bg-primary px-5 pt-7 pb-6 flex items-center gap-4">
-        <button id="btnEditarFoto" class="relative flex-none" style="width:52px;height:52px;" aria-label="Alterar foto de perfil">
-          <div id="avatarWrapPerfil" class="rounded-full bg-lima text-primary flex items-center justify-center font-bold text-base overflow-hidden w-full h-full">
+      <div class="relative" style="background: linear-gradient(135deg, oklch(0.78 0.06 200), oklch(0.7 0.07 205)); height:190px; overflow:hidden;">
+        <div style="position:absolute; top:-30px; right:-10px; width:130px; height:130px; background:oklch(0.66 0.08 205); transform:rotate(45deg); opacity:.7;"></div>
+        <div style="position:absolute; left:20px; top:10px; width:160px; height:160px; border-radius:9999px; background:rgba(255,255,255,.35);"></div>
+
+        <button id="btnEditarFoto" class="absolute" style="left:24px; top:38px; width:110px; height:110px;" aria-label="Alterar foto de perfil">
+          <div id="avatarWrapPerfil" class="rounded-full bg-lima text-primary flex items-center justify-center font-bold text-3xl overflow-hidden w-full h-full border-4 border-white">
             <span id="avatarIniciais">—</span>
             <img id="avatarFotoPerfil" src="" alt="" class="hidden w-full h-full object-cover" />
           </div>
-          <div class="absolute -bottom-0.5 -right-0.5 bg-white rounded-full flex items-center justify-center border border-border" style="width:20px;height:20px;font-size:11px;">✏️</div>
         </button>
         <input id="inputFotoPerfil" type="file" accept="image/*" class="hidden" />
-        <div>
-          <p id="perfilNome" class="text-white font-medium text-lg">—</p>
-          <p id="perfilEmail" class="text-white/60 text-xs">—</p>
-        </div>
+
+        <button id="btnEditarFoto2" class="absolute bg-white rounded-full flex items-center justify-center border border-border" style="right:20px; bottom:16px; width:36px; height:36px; font-size:16px;" aria-label="Alterar foto de perfil">✏️</button>
       </div>
 
-      <div class="px-5 py-4">
-        <div class="bg-secondary rounded-2xl p-4 flex justify-between items-center border border-border">
+      <div class="px-5 pt-4 pb-5 bg-secondary">
+        <p id="perfilNome" class="text-xl font-black text-primary uppercase leading-tight">—</p>
+        <p class="text-sm text-fg mt-1">🇧🇷 Brasil</p>
+        <p class="text-sm text-muted mt-1">Adicione uma biografia ao perfil</p>
+        <div class="flex items-center gap-3 mt-2 text-xs">
+          <span class="underline text-primary font-semibold">0 seguidor</span>
+          <span class="text-border">|</span>
+          <span class="underline text-primary font-semibold">0 a seguir</span>
+        </div>
+        <a href="area.html" class="inline-flex items-center gap-2 bg-primary text-white rounded-lg px-4 py-2.5 text-xs font-bold mt-4">VER PERFIL →</a>
+      </div>
+
+      <div class="px-5 pt-5 pb-2">
+        <div class="flex items-center justify-between mb-2">
+          <p class="text-sm font-bold uppercase text-primary">Assinatura</p>
+          <a href="area.html" class="text-xs font-bold text-muted underline">Mais</a>
+        </div>
+        <div class="bg-secondary rounded-2xl p-4 border border-border flex justify-between items-center">
           <div>
             <p class="text-[11px] uppercase tracking-wide text-muted mb-0.5">Plano ativo</p>
             <p id="perfilPlano" class="text-sm font-bold text-primary">—</p>
           </div>
           <span id="perfilStatusPago" class="text-[11px] font-bold px-2.5 py-1 rounded-full">—</span>
         </div>
+        <p id="perfilEmail" class="text-xs text-muted mt-2">—</p>
       </div>
 
-      <div class="px-5 flex flex-col divide-y divide-border border-t border-b border-border">
+      <div class="px-5 flex flex-col divide-y divide-border border-t border-b border-border mt-3">
         <a href="area.html" class="flex items-center justify-between py-3.5"><span class="text-sm">📄 Minhas planilhas</span><span class="text-muted">›</span></a>
         <a href="https://www.instagram.com/oleandroirineu" target="_blank" rel="noreferrer" class="flex items-center justify-between py-3.5"><span class="text-sm">🗺️ Dicas de viagens e corridas</span><span class="text-muted">›</span></a>
         <a href="https://wa.me/5517982309000" target="_blank" rel="noreferrer" class="flex items-center justify-between py-3.5"><span class="text-sm">💬 Falar com meu treinador</span><span class="text-muted">›</span></a>
@@ -325,11 +339,10 @@
 
   <!-- ==================== NAVEGACAO INFERIOR ==================== -->
   <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-border flex justify-around items-center py-2.5" style="padding-bottom: max(10px, env(safe-area-inset-bottom));">
-    <button data-tab="inicio" class="navitem flex flex-col items-center gap-0.5 text-[10px]"><span style="font-size:20px;">🏠</span>Início</button>
+    <button data-tab="perfil" class="navitem active flex flex-col items-center gap-0.5 text-[10px]"><span style="font-size:20px;">👤</span>Perfil</button>
     <button data-tab="treinos" class="navitem flex flex-col items-center gap-0.5 text-[10px]"><span style="font-size:20px;">🏃</span>Treinos</button>
     <button data-tab="progresso" class="navitem flex flex-col items-center gap-0.5 text-[10px]"><span style="font-size:20px;">📊</span>Progresso</button>
     <button data-tab="evoluir" class="navitem flex flex-col items-center gap-0.5 text-[10px]"><span style="font-size:20px;">🚀</span>Evoluir</button>
-    <button data-tab="perfil" class="navitem flex flex-col items-center gap-0.5 text-[10px]"><span style="font-size:20px;">👤</span>Perfil</button>
   </nav>
 
   <script>
@@ -794,6 +807,9 @@
     }
 
     document.getElementById("btnEditarFoto").addEventListener("click", function() {
+      document.getElementById("inputFotoPerfil").click();
+    });
+    document.getElementById("btnEditarFoto2").addEventListener("click", function() {
       document.getElementById("inputFotoPerfil").click();
     });
 
