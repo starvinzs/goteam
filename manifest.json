@@ -1,38 +1,17 @@
 {
-  "name": "Go Team — Assessoria de Corrida",
-  "short_name": "Go Team",
-  "description": "Planilhas de treino personalizadas para 5K, 10K e 21K. Todo corredor começa com o primeiro passo.",
-  "start_url": "/goteam/login.html",
-  "scope": "/goteam/",
-  "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#0d3b45",
-  "theme_color": "#0d3b45",
-  "lang": "pt-BR",
+  "short_name": "GoTeam",
+  "name": "GoTeam Running - Equipe & Treinos",
   "icons": [
     {
-      "src": "assets/icons/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "assets/icons/icon-192-maskable.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "assets/icons/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "assets/icons/icon-512-maskable.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
+      "src": "/goteam/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "192x192 512x512"
     }
-  ]
+  ],
+  "start_url": "/goteam/",
+  "scope": "/goteam/",
+  "background_color": "#090d16",
+  "theme_color": "#10b981",
+  "display": "standalone",
+  "orientation": "portrait"
 }
